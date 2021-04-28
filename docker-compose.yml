@@ -58,7 +58,7 @@ services:
       SERVICE_TAGS: dev
     working_dir: /var/www
     healthcheck:
-      test: curl -f localhost/api
+      test: curl -f localhost/
       timeout: 10s
       retries: 5
     depends_on:
