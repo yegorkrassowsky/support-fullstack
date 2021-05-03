@@ -17,6 +17,8 @@ class CreateTicketsTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
+            $table->foreignId('agent_id')->nullable()->constrained('users');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

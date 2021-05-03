@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -12,9 +13,25 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Ticket::offset(0)->limit(10)->get();
+        $page = $request->has('page') ? $request->get('page') : 1;
+        $limit = $request->has('limit') ? $request->get('limit') : 10;
+        $status = $request->filled('status') ? $request->get('status') : false;
+        $offset = ($page - 1) * $limit;
+        $count = Ticket::when($status !== false, function($q, $s) use ($status) {
+            return $q->where('status', $status);
+        })->count();
+        $pages = $count >= $limit ? intval($count / $limit) : 1;
+        $tickets = Ticket::addSelect(['agent' => User::select('name')
+            ->whereColumn('agent_id', 'users.id')])
+            ->when($status !== false, function($q, $s) use ($status) {
+                return $q->where('status', $status);
+            })
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+        return ['tickets' => $tickets, 'pages' => $pages];
     }
 
     /**

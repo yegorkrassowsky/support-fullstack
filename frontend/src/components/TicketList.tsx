@@ -8,11 +8,12 @@ type TicketListProps = {
 
 const TicketList: React.FC<TicketListProps> = ({tickets}) => {
   return (
-    <table className="table">
+    <table className="table table-tickets table-hover">
   <thead>
     <tr>
       <th scope="col">#</th>
       <th scope="col">Title</th>
+      <th scope="col">Agent</th>
       <th scope="col">Status</th>
       <th scope="col">Replied at</th>
     </tr>
