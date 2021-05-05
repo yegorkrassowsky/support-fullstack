@@ -62,10 +62,7 @@ const TicketListPage: React.FC = () => {
   const currentPage = +queryParams.page
   const currentStatus = queryParams.status
   const currentLimit = +queryParams.limit
-  // const [currentPage, setCurrentPage] = useState<number>(queryParams.page)
-  // const [currentLimit, setCurrentLimit] = useState<number>(queryParams.limit)
   const [loading, setLoading] = useState<boolean>(true)
-  //const resetCurrentPage = () => setCurrentPage(1)
   const resetCurrentPage = () => onPageChanged(1)
   const onPageChanged = (page: number) => {
     urlParams.set('page', `${page}`)
@@ -84,11 +81,9 @@ const TicketListPage: React.FC = () => {
     resetCurrentPage()
   }
   const updateURL = () => {
-    // remove explicit page (if default) for cleaner url (getQueryParams() will default to page DEFAULT_PAGE)
     if (urlParams.get('page') === `${DEFAULT_PAGE}`) {
       urlParams.delete("page");
     }
-    // remove explicit limit (if default) for cleaner url (getQueryParams() will default to limit DEFAULT_ROWS_PER_PAGE)
     if (urlParams.get("limit") === `${DEFAULT_LIMIT}`) {
       urlParams.delete("limit");
     }
