@@ -12,7 +12,7 @@ const TicketList: React.FC<TicketListProps> = ({tickets}) => {
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Title</th>
+      <th scope="col">Subject</th>
       <th scope="col">Agent</th>
       <th scope="col">Status</th>
       <th scope="col">Replied at</th>

@@ -1,5 +1,4 @@
 import React, {createContext, useState, useContext, useCallback} from 'react';
-import apiClient from './services/api'
 
 type ContextType = {
   loggedIn: boolean
@@ -26,15 +25,9 @@ const StoreProvider: React.FC = ( { children } ) => {
     sessionStorage.setItem('loggedIn', 'true')
   }, [])
   const logout = useCallback(() => {
-    apiClient.post('/logout')
-      .then(response => {
-        if(response.status === 204){
-          setLoggedIn(false)
-          sessionStorage.setItem('loggedIn', 'false')
-        }
-      })
+    setLoggedIn(false)
+    sessionStorage.setItem('loggedIn', 'false')
   }, [])
-
   return <StoreContext.Provider value={{loggedIn, login, logout}}>{children}</StoreContext.Provider>
 }
 

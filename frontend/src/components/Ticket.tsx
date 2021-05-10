@@ -1,7 +1,10 @@
+import useAPI from '../services/api'
 import {ITicket} from '../interfaces'
 import CONSTANTS, {ticketStatuses} from '../constants'
 
-const Ticket: React.FC<ITicket> = ({id, title, agent, status, updated_at}) => {
+const Ticket: React.FC<ITicket> = ({id, subject, agent, status, updated_at}) => {
+  const {gotoTicket} = useAPI()
+  const openTicketPage = () => gotoTicket(id)
   const ticketStatus = ticketStatuses[status] === undefined ? 1 : status
   const statusText = ticketStatuses[ticketStatus]
   const freeBadge = (<span className="badge bg-primary">{CONSTANTS.NOT_ASSIGNED_TICKET_STATUS}</span>)
@@ -10,9 +13,9 @@ const Ticket: React.FC<ITicket> = ({id, title, agent, status, updated_at}) => {
   const badgeClasses = ['bg-danger', 'bg-warning', 'bg-success']
   const badgeClass = ['badge', ...[badgeClasses[ticketStatus]]].join(' ')
   return (
-    <tr>
+    <tr onClick={openTicketPage}>
       <th scope="row">{id}</th>
-      <td>{title}</td>
+      <td>{subject}</td>
       <td>{ticketAgent}</td>
       <td><span className={badgeClass}>{statusText}</span></td>
       <td>{replied}</td>

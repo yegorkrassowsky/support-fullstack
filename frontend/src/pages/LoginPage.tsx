@@ -1,45 +1,20 @@
-import React, {useState} from 'react'
-import apiClient from '../services/api'
-import {useStore} from '../store'
-import InputError from '../components/InputError'
-
-type LoginErrorsProps = {
-  email: string[]
-  password: string[]
-}
-
-const defaultLoginErrors = {email: [], password: []}
+import React, {useEffect, useState} from 'react'
+import useAPI from '../services/api'
+import InputErrors from '../components/InputErrors'
 
 const LoginPage: React.FC = () => {
-  const {login} = useStore()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [errors, setErrors] = useState<LoginErrorsProps>(defaultLoginErrors)
   const [validated, setValidated] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(false)
-  
+  const {loading, errors, getError, login} = useAPI()
+  useEffect(()=>{
+    if(!loading && errors) {
+      setValidated(true)
+    }
+  }, [loading, errors])
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    apiClient.get('/sanctum/csrf-cookie')
-    .then(response => {
-        apiClient.post('/login', {
-            email: email,
-            password: password
-        }).then(response => {
-            if(response.status === 204) {
-              login()
-            } else {
-              setLoading(false)
-            }
-        }).catch(err => {
-          if(typeof err.response.data.errors !== undefined){
-            setErrors(prev => ({...defaultLoginErrors, ...err.response.data.errors}))
-            setValidated(true)
-            setLoading(false)
-          }
-        })
-    })
+    login({email, password})    
   }
   const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
@@ -52,9 +27,12 @@ const LoginPage: React.FC = () => {
   let passwordClass = ['form-control']
 
   if(validated) {
-    emailClass.push(errors.email.length ? 'is-invalid' : 'is-valid')
-    passwordClass.push(errors.password.length ? 'is-invalid' : 'is-valid')
+    emailClass.push(getError('email') ? 'is-invalid' : 'is-valid')
+    passwordClass.push(getError('password') ? 'is-invalid' : 'is-valid')
   }
+  
+  const emailErrors = getError('email') ? <InputErrors errors={errors!.email} /> : null
+  const passwordErrors = getError('password') ? <InputErrors errors={errors!.password} /> : null
 
   return (
     <form onSubmit={submitHandler}>
@@ -62,13 +40,13 @@ const LoginPage: React.FC = () => {
         <div className="mb-3">
           <label htmlFor="loginInputEmail" className="form-label">Email address</label>
           <input value={email} onChange={emailHandler} type="email" className={emailClass.join(' ')} id="loginInputEmail" aria-describedby="emailHelp" />
-          {errors.email.map((error, index) => <InputError key={index} error={error} />)}
+          {emailErrors}
           <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
         </div>
         <div className="mb-3">
           <label htmlFor="loginInputPassword" className="form-label">Password</label>
           <input value={password} onChange={passwordHandler} type="password" className={passwordClass.join(' ')} id="loginInputPassword" />
-          {errors.password.map((error, index) => <InputError key={index} error={error} />)}
+          {passwordErrors}
         </div>
         {loading ? (
             <button className="btn btn-primary" type="button" disabled>

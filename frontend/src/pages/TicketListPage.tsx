@@ -1,7 +1,6 @@
-import React, {useEffect, useState, useMemo} from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-import apiClient from '../services/api'
-import {useStore} from '../store'
+import React, {useEffect, useMemo} from 'react'
+import { useHistory, useLocation, Link } from 'react-router-dom'
+import useAPI from '../services/api'
 import TicketList from '../components/TicketList'
 import Loader from '../components/Loader'
 import Pagination from '../components/Pagination'
@@ -48,7 +47,9 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 }
 
 const TicketListPage: React.FC = () => {
-  const {loggedIn} = useStore()
+  const {getTickets, getData, loading} = useAPI()
+  const tickets: ITicket[] = getData('tickets', [])
+  const totalPages: number = getData('pages', 1)
   const history = useHistory()
   const location = useLocation()
   const urlParams = useMemo(() => {
@@ -57,12 +58,9 @@ const TicketListPage: React.FC = () => {
   const queryParams = useMemo(() => {
     return getQueryParams(urlParams);
   }, [urlParams])
-  const [tickets, setTickets] = useState<ITicket[]>([])
-  const [totalPages, setTotalPages] = useState<number>(1)
   const currentPage = +queryParams.page
   const currentStatus = queryParams.status
   const currentLimit = +queryParams.limit
-  const [loading, setLoading] = useState<boolean>(true)
   const resetCurrentPage = () => onPageChanged(1)
   const onPageChanged = (page: number) => {
     urlParams.set('page', `${page}`)
@@ -101,27 +99,15 @@ const TicketListPage: React.FC = () => {
     listContainerClass.push('loading')
   }
   useEffect(()=>{
-    if(loggedIn){
-      setLoading(true)
-      apiClient.get('/api/ticket', {
-        params: queryParams
-      })
-      .then(response => {
-        if(response.data.tickets !== undefined) {
-          setTickets(response.data.tickets)
-        }
-        if(response.data.pages !== undefined) {
-          setTotalPages(response.data.pages)
-        }
-      })
-      .catch(error => console.error(error))
-      .then(()=>setLoading(false))
-    }
-  }, [loggedIn, queryParams])
+    getTickets(queryParams)
+  }, [queryParams, getTickets])
   return (
     <div className="ticket-list-page">
       <div className="ticket-list-header">
         <h1>Tickets</h1>
+        <div className="d-flex justify-content-end my-4">
+          <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
+        </div>
         <div className="d-flex justify-content-between">
           <StatusFilter currentStatus={currentStatus} onChange={onStatusChanged} />
           <PageLimit currentLimit={currentLimit} onChange={onPageLimitChanged} />
@@ -129,7 +115,7 @@ const TicketListPage: React.FC = () => {
       </div>
       <div className={listContainerClass.join(' ')}>
         {loading ? <Loader /> : '' }
-        {tickets.length ? <TicketList tickets={tickets} /> : loading ? '' : <p className="text-center">No tickets yet</p> }
+        {tickets.length ? <TicketList tickets={tickets} /> : loading ? '' : <p className="text-center">No tickets found</p> }
       </div>
       <Pagination {...paginationProps} />
     </div>

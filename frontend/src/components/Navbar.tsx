@@ -1,9 +1,11 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import {useStore} from '../store'
+import useAPI from '../services/api'
 
 const Navbar: React.FC = () => {
-  const {loggedIn, logout} = useStore()
+  const {loggedIn} = useStore()
+  const {logout} = useAPI()
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container-fluid">
