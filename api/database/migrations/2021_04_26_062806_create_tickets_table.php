@@ -15,9 +15,10 @@ class CreateTicketsTable extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('subject');
             $table->text('content');
             $table->foreignId('agent_id')->nullable()->constrained('users');
+            $table->foreignId('author_id')->constrained('users');
             $table->integer('status')->default(1);
             $table->timestamps();
         });

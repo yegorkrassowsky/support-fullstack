@@ -22,7 +22,7 @@ class TicketController extends Controller
         $count = Ticket::when($status !== false, function($q, $s) use ($status) {
             return $q->where('status', $status);
         })->count();
-        $pages = $count >= $limit ? intval($count / $limit) : 1;
+        $pages = $count >= $limit ? ceil($count / $limit) : 1;
         $tickets = Ticket::addSelect(['agent' => User::select('name')
             ->whereColumn('agent_id', 'users.id')])
             ->when($status !== false, function($q, $s) use ($status) {
@@ -35,16 +35,6 @@ class TicketController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -52,8 +42,23 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        $ticket = Ticket::create($request->all);
-        return response()->json($ticket, 201);
+        $user = $request->user();
+
+        if ($user || $user->hasRole('client')){
+            $validated = $request->validate([
+                'subject' => 'required',
+                'content' => 'required',
+            ]);
+            $ticket = new Ticket;
+            $ticket->author_id = $user->id;
+            $ticket->fill([
+                'subject' => strip_tags($validated['subject']),
+                'content' => $validated['content'],
+            ]);
+            $ticket->save();
+            return response()->json($ticket, 201);
+        }
+        return response()->json(['error' => 'Forbidden'], 403);
     }
 
     /**
@@ -62,46 +67,20 @@ class TicketController extends Controller
      * @param  \App\Models\Ticket  $ticket
      * @return \Illuminate\Http\Response
      */
-    public function show(Ticket $ticket)
+    public function show(Request $request, $id)
     {
+        $ticket = Ticket::addSelect([
+            'agent' => User::select('name')->whereColumn('agent_id', 'users.id')
+            ])
+            ->addSelect([
+                'author' => User::select('name')->whereColumn('author_id', 'users.id')
+            ])
+            ->findOrFail($id);
+        $user = $request->user();
+        if ( $user->hasRole('client') && $ticket->author_id != $user->id ) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
         return $ticket;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Ticket $ticket)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Ticket $ticket)
-    {
-        $ticket->update($request->all());
-        return response()->json($ticket, 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Ticket  $ticket
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Ticket $ticket)
-    {
-        $ticket->delete();
-
-        return response()->json(null, 204);
-
-    }
 }
