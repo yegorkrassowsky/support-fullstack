@@ -51,8 +51,8 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 const TicketListPage: React.FC = () => {
   const {hasRole} = useStore()
   const {getTickets, getData, loading} = useAPI()
-  const tickets: ITicket[] = getData('tickets', [])
-  const totalPages: number = getData('pages', 1)
+  const tickets: ITicket[] = getData('data', [])
+  const totalPages: number = getData('last_page', 1)
   const history = useHistory()
   const location = useLocation()
   const urlParams = useMemo(() => {

@@ -13,24 +13,12 @@ class TicketController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
     public function index(Request $request)
     {
         $user = $request->user();
-        $page = $request->has('page') ? $request->get('page') : 1;
         $limit = $request->has('limit') ? $request->get('limit') : 10;
         $status = $request->filled('status') ? $request->get('status') : false;
-        $offset = ($page - 1) * $limit;
-        $count = Ticket::when($status !== false, function($q, $c) use ($status) {
-            return $q->where('status', $status);
-            })
-            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
-                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
-            } )
-            ->when($user->hasRole('client'), function($q, $c) use ($user) {
-                return $q->where('author_id', $user->id);
-            })
-            ->count();
-        $pages = $count >= $limit ? ceil($count / $limit) : 1;
         $tickets = Ticket::addSelect([
                 'agent' => User::select('name')
                 ->whereColumn('agent_id', 'users.id')
@@ -47,10 +35,8 @@ class TicketController extends Controller
             ->when($user->hasRole('client'), function($q, $c) use ($user) {
                 return $q->where('author_id', $user->id);
             })
-            ->offset($offset)
-            ->limit($limit)
-            ->get();
-        return ['tickets' => $tickets, 'pages' => $pages];
+            ->paginate($limit);
+        return $tickets;
     }
 
     /**
