@@ -56,7 +56,7 @@ class LoginController extends Controller
         }
         $user = $this->guard()->user();
         return $request->wantsJson()
-            ? response()->json(['userRoles' => $user->getRoleNames(), 'userName' => $user->email], 200)
+            ? response()->json(['userRoles' => $user->getRoleNames(), 'userName' => $user->name], 200)
             : redirect()->intended($this->redirectPath());
     }
 
