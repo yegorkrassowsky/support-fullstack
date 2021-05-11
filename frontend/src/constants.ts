@@ -9,3 +9,9 @@ export default CONSTANTS
 export const ticketStatuses = [
   'closed', 'pending', 'replied'
 ]
+
+export const userRoles = {
+  admin: 'admin',
+  agent: 'agent',
+  client: 'client',
+}

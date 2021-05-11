@@ -44,7 +44,7 @@ class TicketController extends Controller
     {
         $user = $request->user();
 
-        if ($user || $user->hasRole('client')){
+        if ($user->hasRole('client')){
             $validated = $request->validate([
                 'subject' => 'required',
                 'content' => 'required',

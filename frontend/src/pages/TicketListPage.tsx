@@ -7,6 +7,8 @@ import Pagination from '../components/Pagination'
 import PageLimit from '../components/PageLimit'
 import StatusFilter from '../components/StatusFilter'
 import {ITicket} from '../interfaces'
+import {userRoles} from '../constants'
+import {useStore} from '../store'
 
 const supportedParams = ['page', 'limit', 'status']
 
@@ -47,6 +49,7 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 }
 
 const TicketListPage: React.FC = () => {
+  const {hasRole} = useStore()
   const {getTickets, getData, loading} = useAPI()
   const tickets: ITicket[] = getData('tickets', [])
   const totalPages: number = getData('pages', 1)
@@ -105,9 +108,11 @@ const TicketListPage: React.FC = () => {
     <div className="ticket-list-page">
       <div className="ticket-list-header">
         <h1>Tickets</h1>
-        <div className="d-flex justify-content-end my-4">
-          <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
-        </div>
+        {hasRole(userRoles.client) && (
+          <div className="d-flex justify-content-end my-4">
+            <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
+          </div>
+      )}
         <div className="d-flex justify-content-between">
           <StatusFilter currentStatus={currentStatus} onChange={onStatusChanged} />
           <PageLimit currentLimit={currentLimit} onChange={onPageLimitChanged} />

@@ -39,13 +39,26 @@ class DatabaseSeeder extends Seeder
         $agent_role->givePermissionTo($create_responses);
         $agent_role->givePermissionTo($view_tickets);
 
-        $agent = User::create([
+        $admin_role = Role::create(['name' => 'admin']);
+        $admin_role->givePermissionTo($create_responses);
+        $admin_role->givePermissionTo($view_tickets);
+
+        $admin = User::create([
             'name' => 'Yegor',
             'email' => 'egorkryazh@gmail.com',
             'password' => Hash::make('123'),
         ]);
 
-        $agent->assignRole($agent_role);
+        $admin->assignRole($admin_role);
+        $admin->assignRole($agent_role);
+
+        $client = User::create([
+            'name' => 'John Smith',
+            'email' => 'qweg@mail.ru',
+            'password' => Hash::make('123'),
+        ]);
+
+        $client->assignRole($client_role);
 
         $clients = User::factory(10)->create()->each(function ($user) use ($client_role){
             $user->assignRole($client_role);
