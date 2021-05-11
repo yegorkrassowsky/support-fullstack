@@ -1,8 +1,10 @@
 import useAPI from '../services/api'
 import {ITicket} from '../interfaces'
-import CONSTANTS, {ticketStatuses} from '../constants'
+import CONSTANTS, {ticketStatuses, userRoles} from '../constants'
+import {useStore} from '../store'
 
-const Ticket: React.FC<ITicket> = ({id, subject, agent, status, updated_at}) => {
+const Ticket: React.FC<ITicket> = ({id, subject, author, agent, status, updated_at}) => {
+  const {hasRole} = useStore()
   const {gotoTicket} = useAPI()
   const openTicketPage = () => gotoTicket(id)
   const ticketStatus = ticketStatuses[status] === undefined ? 1 : status
@@ -16,6 +18,7 @@ const Ticket: React.FC<ITicket> = ({id, subject, agent, status, updated_at}) => 
     <tr onClick={openTicketPage}>
       <th scope="row">{id}</th>
       <td>{subject}</td>
+      {hasRole(userRoles.agent) && (<td>{author}</td>)}
       <td>{ticketAgent}</td>
       <td><span className={badgeClass}>{statusText}</span></td>
       <td>{replied}</td>

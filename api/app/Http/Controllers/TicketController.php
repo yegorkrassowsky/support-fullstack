@@ -15,18 +15,37 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $page = $request->has('page') ? $request->get('page') : 1;
         $limit = $request->has('limit') ? $request->get('limit') : 10;
         $status = $request->filled('status') ? $request->get('status') : false;
         $offset = ($page - 1) * $limit;
-        $count = Ticket::when($status !== false, function($q, $s) use ($status) {
+        $count = Ticket::when($status !== false, function($q, $c) use ($status) {
             return $q->where('status', $status);
-        })->count();
+            })
+            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
+                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
+            } )
+            ->when($user->hasRole('client'), function($q, $c) use ($user) {
+                return $q->where('author_id', $user->id);
+            })
+            ->count();
         $pages = $count >= $limit ? ceil($count / $limit) : 1;
-        $tickets = Ticket::addSelect(['agent' => User::select('name')
-            ->whereColumn('agent_id', 'users.id')])
-            ->when($status !== false, function($q, $s) use ($status) {
+        $tickets = Ticket::addSelect([
+                'agent' => User::select('name')
+                ->whereColumn('agent_id', 'users.id')
+            ])
+                ->addSelect(['author' => User::select('name')
+                ->whereColumn('author_id', 'users.id')
+            ])
+            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
+                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
+            } )
+            ->when($status !== false, function($q, $c) use ($status) {
                 return $q->where('status', $status);
+            })
+            ->when($user->hasRole('client'), function($q, $c) use ($user) {
+                return $q->where('author_id', $user->id);
             })
             ->offset($offset)
             ->limit($limit)

@@ -52,6 +52,14 @@ class DatabaseSeeder extends Seeder
         $admin->assignRole($admin_role);
         $admin->assignRole($agent_role);
 
+        $agent = User::create([
+            'name' => 'Agent Smith',
+            'email' => 'ykdevreact@gmail.com',
+            'password' => Hash::make('123'),
+        ]);
+
+        $agent->assignRole($agent_role);
+
         $client = User::create([
             'name' => 'John Smith',
             'email' => 'qweg@mail.ru',

@@ -4,7 +4,7 @@ export interface ITicket {
   content: string
   status: number
   agent: string
-  client: string
+  author: string
   created_at: string
   updated_at: string
 }

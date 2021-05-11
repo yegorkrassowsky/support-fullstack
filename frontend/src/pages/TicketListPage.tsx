@@ -106,14 +106,14 @@ const TicketListPage: React.FC = () => {
   }, [queryParams, getTickets])
   return (
     <div className="ticket-list-page">
-      <div className="ticket-list-header">
+      <div className="ticket-list-header main-header">
         <h1>Tickets</h1>
         {hasRole(userRoles.client) && (
-          <div className="d-flex justify-content-end my-4">
+          <div className="d-flex justify-content-end">
             <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
           </div>
       )}
-        <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-between my-4">
           <StatusFilter currentStatus={currentStatus} onChange={onStatusChanged} />
           <PageLimit currentLimit={currentLimit} onChange={onPageLimitChanged} />
         </div>
