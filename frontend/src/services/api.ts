@@ -33,8 +33,8 @@ const useAPI = () => {
       .then(response => {
         request.post('/login', params)
           .then(response => {
-            if(response.status === 200 && response.data.userRoles !== undefined && response.data.userRoles.length) {
-              storeLogin(response.data.userRoles)
+            if(response.status === 200 && response.data !== undefined) {
+              storeLogin(response.data)
             } else {
               setLoading(false)
             }

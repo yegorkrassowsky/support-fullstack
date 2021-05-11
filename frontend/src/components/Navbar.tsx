@@ -4,27 +4,32 @@ import {useStore} from '../store'
 import useAPI from '../services/api'
 
 const Navbar: React.FC = () => {
-  const {loggedIn} = useStore()
+  const {loggedIn, userName} = useStore()  
   const {logout} = useAPI()
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-primary main-navbar">
       <div className="container-fluid">
         <button className="navbar-toggler" type="button">
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav">
-            {loggedIn ? (
-              <>
-                <button className="btn btn-link" onClick={logout}>Logout</button>
-                <li className="nav-link">
-                  <NavLink to='/'>Dashboard</NavLink>
+        <div className="collapse navbar-collapse">
+          {loggedIn ? (
+            <>
+              <ul className="navbar-nav">
+                <li className="nav-item">
+                  <NavLink className="nav-link" to='/'>Dashboard</NavLink>
                 </li>
-              </>
-            ) : (
-              <li className="nav-link"><NavLink to='/login'>Login</NavLink></li>
-            ) }
-          </ul>
+              </ul>
+              <ul className="navbar-nav">
+                <span className="navbar-text">{userName}</span>
+                <li className="nav-item"><button className="btn btn-link nav-link" onClick={logout}>Logout</button></li>
+              </ul>
+            </>
+          ) : (
+            <ul className="navbar-nav">
+              <li className="nav-item"><NavLink className="nav-link" to='/login'>Login</NavLink></li>
+            </ul>
+          ) }
         </div>
       </div>
     </nav>

@@ -1,6 +1,14 @@
 @import 'TicketList';
 @import 'NewTicket';
 
+.main-navbar {
+  margin-bottom: 2rem;
+  .navbar-collapse {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
 .main-header {
   margin: 2rem 0;
 }
