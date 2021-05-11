@@ -1,5 +1,4 @@
 import React, {createContext, useState, useContext, useCallback} from 'react';
-import {userRoles} from './constants'
 
 type ContextType = {
   loggedIn: boolean
