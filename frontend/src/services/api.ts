@@ -24,7 +24,7 @@ const useAPI = () => {
   const [data, setData] = useState<any>(null)
   const [errors, setErrors] = useState<ErrorsProps>(null)
 
-  const getData = (field: string, defaultValue: any = null) => data && field in data ? data[field] : defaultValue
+  const getData = (field: string, defaultValue: any = null) => data && field in data && data[field] !== null ? data[field] : defaultValue
   const getError = (field: string, defaultValue: any = null) => errors && field in errors ? errors[field] : defaultValue
 
   const login = useCallback((params: LoginProps) => {
@@ -101,7 +101,10 @@ const useAPI = () => {
       })
   }, [])
 
-  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, gotoTicket, getData}
+  const newResponse = useCallback(ticketId => {
+    newTicket({})
+  }, [])
+  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, gotoTicket, getData}
 }
 
 export default useAPI
