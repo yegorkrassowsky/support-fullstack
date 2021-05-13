@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use App\Models\Ticket;
+use App\Models\Response;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -76,15 +77,35 @@ class DatabaseSeeder extends Seeder
         }, $clients->toArray());
 
         $faker = \Faker\Factory::create();
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $created_at = $faker->dateTimeThisYear($max = 'now', $timezone = null);
-            Ticket::create([
+            $author_id = $i ? $faker->randomElement($client_ids) : $client->id; // First ticket by client explicitly
+            $agent_id = $faker->randomElement([null, $agent->id, $admin->id]);
+            $status = $faker->randomElement([0, 1, 2]);
+            $ticket = Ticket::create([
                 'subject' => $faker->sentence,
                 'content' => $faker->text,
-                'author_id' => $faker->randomElement($client_ids),
+                'author_id' => $author_id,
+                'agent_id' => $agent_id,
+                'status' => $status,
                 'created_at' => $created_at,
                 'updated_at' => $created_at,
             ]);
+            if($agent_id) { // Agent is set
+                for ($j = 0; $j < 30; $j++) {
+                    if ($j === 29) { // Last response replied by agent or client explicitly
+                        $response_author_id = $status === 2 ? $agent_id : $author_id;
+                    } else {
+                        $response_author_id = $faker->randomElement([$author_id, $agent_id]);
+                    }
+                    Response::create([
+                        'ticket_id' => $ticket->id,
+                        'content' => $faker->text,
+                        'author_id' => $response_author_id,
+                    ]);
+                }
+            }
+
         }
 
     }

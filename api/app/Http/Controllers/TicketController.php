@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ticket;
+use App\Models\Response;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -74,18 +75,28 @@ class TicketController extends Controller
      */
     public function show(Request $request, $id)
     {
+        $user = $request->user();
         $ticket = Ticket::addSelect([
             'agent' => User::select('name')->whereColumn('agent_id', 'users.id')
             ])
             ->addSelect([
                 'author' => User::select('name')->whereColumn('author_id', 'users.id')
             ])
+            ->when($user->hasRole('client'), function($q, $c) use ($user) {
+                return $q->where('author_id', $user->id);
+            })
             ->findOrFail($id);
-        $user = $request->user();
-        if ( $user->hasRole('client') && $ticket->author_id != $user->id ) {
-            return response()->json(['error' => 'Forbidden'], 403);
-        }
-        return $ticket;
+
+        $responses_limit = $request->has('limit') ? $request->get('limit') : 10;
+
+        $responses = Response::addSelect([
+            'author' => User::select('name')
+            ->whereColumn('author_id', 'users.id')
+        ])
+        ->where('ticket_id', $ticket->id)
+        ->paginate($responses_limit);
+
+        return response()->json(['ticket' => $ticket, 'responses' => $responses]);
     }
 
 }
