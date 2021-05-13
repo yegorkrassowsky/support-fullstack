@@ -1,5 +1,16 @@
 @import 'TicketList';
 @import 'NewTicket';
+@import 'Ticket';
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background-color: #f4f4f4;
+}
 
 .main-navbar {
   margin-bottom: 2rem;
@@ -11,4 +22,20 @@
 
 .main-header {
   margin: 2rem 0;
+}
+
+.tinymce-wrapper {
+  .tox-tinymce {
+    border-radius: .25rem;
+  }
+  &.is-invalid {
+    .tox-tinymce {
+      border-color: #dc3545;
+    }
+  }
+  &.is-valid {
+    .tox-tinymce {
+      border-color: #198754;
+    }
+  }
 }

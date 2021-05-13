@@ -6,16 +6,6 @@
     display: flex;
     justify-content: center;
   }
-  .tinymce-wrapper {
-    .tox-tinymce {
-      border-radius: .25rem;
-    }
-    &.is-invalid {
-      .tox-tinymce {
-        border-color: #dc3545;
-      }
-    }
-  }
   &.ready {
     form {
       display: block;

@@ -1,23 +1,22 @@
 import React, {useState, useRef, useEffect} from 'react'
 import InputErrors from '../components/InputErrors'
-import { Editor } from '@tinymce/tinymce-react'
 import useAPI from '../services/api'
 import Loader from '../components/Loader'
+import Editor from '../components/Editor'
 
 const NewTicketPage: React.FC = () => {
   const {newTicket, loading, errors, getError} = useAPI()
   const [subject, setSubject] = useState<string>('')
-  const [validated, setValidated] = useState<boolean>(false)
+  const validated = !!errors
   const [editorReady, setEditorReady] = useState<boolean>(false)
   const editorRef = useRef<any>()
+  const setEditor = (editor: any) => {
+    editorRef.current = editor
+    setEditorReady(true)
+  }
   const subjectHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSubject(e.target.value)
   }
-  useEffect(()=>{
-    if(!loading && errors) {
-      setValidated(true)
-    }
-  }, [loading, errors])
 
   useEffect(()=>{
     if(editorRef.current !== undefined) {
@@ -27,24 +26,22 @@ const NewTicketPage: React.FC = () => {
 
   let containerClass = ['new-ticket-container']
   let subjectClass = ['form-control']
-  let contentClass = ['tinymce-wrapper']
 
-  if(validated) {
+  if(errors) {
     subjectClass.push(getError('subject') ? 'is-invalid' : 'is-valid')
-    contentClass.push(getError('content') ? 'is-invalid' : 'is-valid')
   }
 
   if(editorReady) {
     containerClass.push('ready')
   }
 
-  const subjectErrors = getError('subject') ? <InputErrors errors={errors!.subject} /> : null
-  const contentErrors = getError('content') ? <InputErrors errors={errors!.content} /> : null
+  const subjectErrors = getError('subject') ? <InputErrors errors={getError('subject')} /> : null
+  const contentErrors = getError('content') ? <InputErrors errors={getError('content')} /> : null
 
   
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
-    if (editorRef.current) {
+    if (editorRef.current !== undefined) {
       newTicket({
         subject,
         content: editorRef.current.getContent()
@@ -68,31 +65,7 @@ const NewTicketPage: React.FC = () => {
             </div>
             <div className="mb-3">
               <label className="form-label" onClick={()=>editorRef.current.focus()}>Content</label>
-              <div className={contentClass.join(' ')}>
-                <Editor
-                  apiKey="2k6p2xtgsbnwtu65rs5p9yvjwnvq9u3dk8qad3tcu00nct0z"
-                  onInit={(evt, editor) => editorRef.current = editor}
-                  init={{
-                    height: 300,
-                    menubar: false,
-                    plugins: [
-                      'advlist autolink lists link image charmap print preview anchor',
-                      'searchreplace visualblocks code fullscreen',
-                      'insertdatetime media table paste code help wordcount'
-                    ],
-                    toolbar: 'undo redo | formatselect | ' +
-                    'bold italic backcolor | alignleft aligncenter ' +
-                    'alignright alignjustify | bullist numlist outdent indent | ' +
-                    'removeformat | help',
-                    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                    setup: (editor) => {
-                      editor.on('init', (e) => {
-                        setEditorReady(true)
-                      })
-                    },
-                  }}
-                />
-              </div>
+              <Editor validated={validated} errors={getError('content')} setEditor={setEditor} />
               {contentErrors}
             </div>
             {loading ? (
