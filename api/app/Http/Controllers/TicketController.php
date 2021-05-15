@@ -20,14 +20,7 @@ class TicketController extends Controller
         $user = $request->user();
         $limit = $request->has('limit') ? $request->get('limit') : 10;
         $status = $request->filled('status') ? $request->get('status') : false;
-        $tickets = Ticket::addSelect([
-                'agent' => User::select('name')
-                ->whereColumn('agent_id', 'users.id')
-            ])
-                ->addSelect(['author' => User::select('name')
-                ->whereColumn('author_id', 'users.id')
-            ])
-            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
+        $tickets = Ticket::when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
                 return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
             } )
             ->when($status !== false, function($q, $c) use ($status) {
@@ -76,24 +69,15 @@ class TicketController extends Controller
     public function show(Request $request, $id)
     {
         $user = $request->user();
-        $ticket = Ticket::addSelect([
-            'agent' => User::select('name')->whereColumn('agent_id', 'users.id')
-            ])
-            ->addSelect([
-                'author' => User::select('name')->whereColumn('author_id', 'users.id')
-            ])
-            ->when($user->hasRole('client'), function($q, $c) use ($user) {
+        $ticket = Ticket::when($user->hasRole('client'), function($q, $c) use ($user) {
                 return $q->where('author_id', $user->id);
             })
             ->findOrFail($id);
 
         $responses_limit = $request->has('limit') ? $request->get('limit') : 10;
 
-        $responses = Response::addSelect([
-            'author' => User::select('name')
-            ->whereColumn('author_id', 'users.id')
-        ])
-        ->where('ticket_id', $ticket->id)
+        $responses = Response::where('ticket_id', $ticket->id)
+        ->orderBy('created_at', 'asc')
         ->paginate($responses_limit);
 
         return response()->json(['ticket' => $ticket, 'responses' => $responses]);
