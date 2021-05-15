@@ -10,7 +10,7 @@ function App() {
     <Router>
         <StoreProvider>
           <Navbar />
-          <div className="container"><Routes /></div>
+          <div className="container main-container"><Routes /></div>
         </StoreProvider>
     </Router>
   )

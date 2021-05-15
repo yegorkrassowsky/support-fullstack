@@ -119,8 +119,8 @@ const TicketListPage: React.FC = () => {
         </div>
       </div>
       <div className={listContainerClass.join(' ')}>
-        {loading ? <Loader /> : '' }
-        {tickets.length ? <TicketList tickets={tickets} /> : loading ? '' : <p className="text-center">No tickets found</p> }
+        <Loader />
+        {tickets.length ? <TicketList tickets={tickets} /> : <div className="tickets-not-found">No tickets found</div> }
       </div>
       <Pagination {...paginationProps} />
     </div>

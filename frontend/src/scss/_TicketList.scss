@@ -1,33 +1,46 @@
-.ticket-list-header {
-  .status-filter {
-    .muted {
-      opacity: 0.5;
+.ticket-list-page {
+  padding-bottom: 30px;
+  .ticket-list-header {
+    .status-filter {
+      .muted {
+        opacity: 0.5;
+      }
     }
   }
-}
-.ticket-list-container {
-  position: relative;
-  min-height: 100px;
-  background-color: #fff;
-  padding: 20px 30px;
-  margin-bottom: 20px;
-  .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-  }
-  &.loading {
+  .ticket-list-container {
+    position: relative;
+    background-color: #fff;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+    .spinner-container {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+    }
     .table-tickets {
-      opacity: 0.4;
+      td {
+        cursor: pointer;
+      }
     }
-  }
-  .table-tickets {
-    td {
-      cursor: pointer;
+    .tickets-not-found {
+      text-align: center;
+    }
+    &.loading {
+      .spinner-container {
+        display: flex;
+      }
+      .table-tickets {
+        opacity: 0.4;
+      }
+      .tickets-not-found {
+        opacity: 0;
+      }
     }
   }
 }

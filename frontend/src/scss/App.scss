@@ -12,6 +12,10 @@ body {
   background-color: #f4f4f4;
 }
 
+.main-container {
+  overflow: hidden;
+}
+
 .main-navbar {
   margin-bottom: 2rem;
   .navbar-collapse {
@@ -38,4 +42,8 @@ body {
       border-color: #198754;
     }
   }
+}
+
+.pagination {
+  margin: 0;
 }
