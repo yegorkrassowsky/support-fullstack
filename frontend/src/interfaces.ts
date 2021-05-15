@@ -8,3 +8,21 @@ export interface ITicket {
   created_at: string
   updated_at: string
 }
+
+export interface IResponse {
+  id: number
+  content: string
+  author: string
+  created_at: string
+  updated_at: string
+  author_pos: string
+  showDate?: boolean
+  loading?: boolean
+}
+
+export interface IPagination {
+  totalPages: number
+  currentPage: number
+  onPageChanged: (page: number) => void
+  pageNeighbours?: number
+}

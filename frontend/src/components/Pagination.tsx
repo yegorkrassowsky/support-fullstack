@@ -1,12 +1,6 @@
 import React, { useMemo, useCallback } from 'react'
 import CONSTANTS from '../constants'
-
-type PaginationProps = {
-  totalPages: number
-  currentPage: number
-  onPageChanged: (page: number) => void
-  pageNeighbours?: number
-}
+import {IPagination} from '../interfaces'
 
 const range = (from: number, to: number, step: number = 1) => {
   let i = from;
@@ -20,7 +14,7 @@ const range = (from: number, to: number, step: number = 1) => {
   return range;
 }
 
-const Pagination: React.FC<PaginationProps> = ({totalPages, currentPage, onPageChanged, pageNeighbours = 0}) => {  
+const Pagination: React.FC<IPagination> = ({totalPages, currentPage, onPageChanged, pageNeighbours = 0}) => {  
   const fetchPageNumbers = useCallback((): any[] => {
     const totalNumbers = pageNeighbours * 2 + 3;
     const totalBlocks = totalNumbers + 2;

@@ -2,12 +2,15 @@ import React, {useRef, useEffect} from 'react'
 import useAPI from '../services/api'
 import Editor from './Editor'
 import InputErrors from '../components/InputErrors'
+import { IResponse } from '../interfaces'
 
 type ReplyProps = {
+  ticketId: string
   setEditorReady: () => void
+  addResponse: (response: IResponse) => void
 }
 
-const Reply: React.FC<ReplyProps> = ({setEditorReady}) => {
+const Reply: React.FC<ReplyProps> = ({ticketId, setEditorReady, addResponse}) => {
   const {newResponse, loading, errors, getError} = useAPI()
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
@@ -24,12 +27,17 @@ const Reply: React.FC<ReplyProps> = ({setEditorReady}) => {
     }
   }, [loading])
 
+  const onResponseAdded = (response: IResponse) => {
+    addResponse(response)
+    editorRef.current.setContent('')
+  }
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current) {
       newResponse({
+        ticket_id: ticketId,
         content: editorRef.current.getContent()
-      })
+      }, onResponseAdded)
     }
   }
 

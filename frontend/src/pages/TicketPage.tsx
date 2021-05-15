@@ -1,22 +1,93 @@
-import React, {useEffect, useState, useRef} from 'react'
-import {useParams} from 'react-router-dom'
+import React, {useEffect, useState, useMemo} from 'react'
+import {useParams, useLocation, useHistory} from 'react-router-dom'
 import useAPI from '../services/api'
 import Loader from '../components/Loader'
 import {ticketStatuses} from '../constants'
 import TicketInfo from '../components/TicketInfo'
 import Reply from '../components/Reply'
+import ResponseList from '../components/ResponseList'
+
+const supportedParams = ['page']
+
+type DataQueryProps = {
+  page: number
+}
+
+const DEFAULT_PAGE = 1
+
+const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
+  const obj: any = Array.from(urlParams)
+    .filter((param) => supportedParams.includes(param[0]))
+    .map((param) => {
+      return {
+        [param[0]]: param[1]
+      };
+    })
+    .reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+  const keys = Object.keys(obj);
+
+  if (!keys.includes("page")) {
+    obj.page = DEFAULT_PAGE;
+  }
+
+  return obj as DataQueryProps;
+}
 
 const TicketPage: React.FC = () => {
   const {id: ticketId} = useParams<{id: string}>()
   const [editorReady, setEditorReady] = useState<boolean>(false)
-  const {getTicket, loading: ticketLoading, getData} = useAPI()  
+  const {getTicket, loading: ticketLoading, getData, setData} = useAPI()
+  const responses = getData('responses')
+  const addResponse = (data: any) => {
+    setData((prev: any) => {
+      const {ticket, response} = data
+      const {responses: prevResponses} = prev 
+      const {data: prevResponsesData} = prevResponses     
+      return {
+        ticket,
+        responses: {
+          ...prevResponses,
+          data: [...prevResponsesData, response]
+        }
+      }
+    })
+  }
+  const [pageReady, setPageReady] = useState<boolean>(false)
   useEffect(()=>{
-    getTicket(ticketId)
-  }, [getTicket, ticketId])
-  const pageReady = ! ticketLoading && editorReady
+    if(! pageReady && ! ticketLoading && editorReady) {
+      setPageReady(true)
+    }
+  }, [ticketLoading, editorReady, pageReady])
+  const location = useLocation()
+  const urlParams = useMemo(() => {
+    return new URLSearchParams(location.search);
+  }, [location.search])
+  const queryParams = useMemo(() => {
+    return getQueryParams(urlParams);
+  }, [urlParams])
+  const currentPage = +queryParams.page
+  useEffect(()=>{
+    getTicket(ticketId, currentPage)
+  }, [getTicket, ticketId, currentPage])
+  const onPageChanged = (page: number) => {
+    urlParams.set('page', `${page}`)
+    updateURL()
+  }
+  const history = useHistory()
+  const updateURL = () => {
+    if (urlParams.get('page') === `${DEFAULT_PAGE}`) {
+      urlParams.delete("page");
+    }
+    history.push({
+      pathname: location.pathname,
+      search: `?${urlParams}`
+    })
+  }
+
   const ticketData = getData('ticket', {})
   const {agent, status} = ticketData
-  const responses = getData('responses', [])
+  
   const statusText = ticketStatuses[status]
   const statusClasses = ['bg-danger', 'bg-warning', 'bg-success']
   const cardClass = ['card', ...[statusClasses[status]]].join(' ')
@@ -26,7 +97,6 @@ const TicketPage: React.FC = () => {
   if( pageReady ) {
     ticketContainerClass.push('ready')
   }
-
   
   return (
     <div className="ticket-page">
@@ -47,8 +117,18 @@ const TicketPage: React.FC = () => {
             </div>
           </div>
           <div className="col-lg-9 order-lg-1">
-            <TicketInfo ticket={ticketData} />            
-            <Reply setEditorReady={() => setEditorReady(true)} />
+            <TicketInfo ticket={ticketData} />
+            {responses && responses.data.length > 0 && <ResponseList
+              data={responses.data}
+              paginationProps={{
+                currentPage,
+                onPageChanged,
+                totalPages: responses.last_page,
+                pageNeighbours: 1,
+              }}
+              loading={ticketLoading}
+            />}
+            <Reply addResponse={addResponse} ticketId={ticketId} setEditorReady={() => setEditorReady(true)} />
           </div>
         </div>
       </div>

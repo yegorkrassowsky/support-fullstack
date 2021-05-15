@@ -69,7 +69,7 @@ const useAPI = () => {
       .then(()=>setLoading(false))
   }, [])
 
-  const gotoTicket = useCallback( id => history.push(`/ticket/${id}`), [history])
+  const gotoTicket = useCallback( (id) => history.push(`/ticket/${id}`), [history])
 
   const newTicket = useCallback(params => {
     setLoading(true)
@@ -87,9 +87,9 @@ const useAPI = () => {
       })
   }, [gotoTicket])
 
-  const getTicket = useCallback(id => {
+  const getTicket = useCallback((id, page = 1) => {
     setLoading(true)
-    request.get(`/api/ticket/${id}`)
+    request.get(`/api/ticket/${id}`, {params: {page}})
       .then(response => {        
         if(response.data !== undefined) {
           setData(response.data)
@@ -101,10 +101,23 @@ const useAPI = () => {
       })
   }, [])
 
-  const newResponse = useCallback(ticketId => {
-    newTicket({})
+  const newResponse = useCallback((params, addResponse) => {
+    setLoading(true)
+    request.post('/api/response', params)
+      .then(response => {
+        if(response.data !== undefined) {
+          addResponse(response.data)
+        }
+        setLoading(false)
+      })
+      .catch(err => {
+        if(err.response.data.errors !== undefined){
+          setErrors(err.response.data.errors)    
+        }
+        setLoading(false)
+      })
   }, [])
-  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, gotoTicket, getData}
+  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, gotoTicket, getData, setData}
 }
 
 export default useAPI
