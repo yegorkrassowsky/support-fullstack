@@ -83,4 +83,31 @@ class TicketController extends Controller
         return response()->json(['ticket' => $ticket, 'responses' => $responses]);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Ticket  $ticket
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+        $user = $request->user();
+        if ( $user->hasRole('client') && $user->id !== $ticket->author_id ) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+        if ( ! $user->hasRole('admin') && $user->hasRole('agent') && $user->id !== $ticket->agent_id ) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+        if ( ! $request->has('status') ) {
+            return response()->json(['error' => 'Invalid data'], 400);
+        }
+        $status = intval($request->get('status'));
+        if ( in_array( $status, [0, 1] ) && $status !== $ticket->status ) {
+            $ticket->status = $status;
+            $ticket->save();
+        }
+        return response()->json($ticket, 200);
+    }
 }
