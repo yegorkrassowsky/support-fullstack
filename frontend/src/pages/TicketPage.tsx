@@ -6,6 +6,7 @@ import {ticketStatuses} from '../constants'
 import TicketInfo from '../components/TicketInfo'
 import Reply from '../components/Reply'
 import ResponseList from '../components/ResponseList'
+import {ITicket} from '../interfaces'
 
 const supportedParams = ['page']
 
@@ -38,6 +39,14 @@ const TicketPage: React.FC = () => {
   const {id: ticketId} = useParams<{id: string}>()
   const [editorReady, setEditorReady] = useState<boolean>(false)
   const {getTicket, loading: ticketLoading, getData, setData} = useAPI()
+  const ticketData = getData('ticket', {})
+  const {agent, status} = ticketData
+
+  const {changeStatus, loading: changeStatusLoading} = useAPI()
+  const setTicketData = (ticket: ITicket) => setData((prev: any) => {
+    return {...prev, ticket}
+  })
+  const changeStatusHandler = () => changeStatus(ticketId, status ? 0 : 1, setTicketData)
   const responses = getData('responses')
   const addResponse = (data: any) => {
     setData((prev: any) => {
@@ -84,9 +93,6 @@ const TicketPage: React.FC = () => {
       search: `?${urlParams}`
     })
   }
-
-  const ticketData = getData('ticket', {})
-  const {agent, status} = ticketData
   
   const statusText = ticketStatuses[status]
   const statusClasses = ['bg-danger', 'bg-warning', 'bg-success']
@@ -117,7 +123,7 @@ const TicketPage: React.FC = () => {
             </div>
           </div>
           <div className="col-lg-9 order-lg-1">
-            <TicketInfo ticket={ticketData} />
+            <TicketInfo ticket={ticketData} changeStatusHandler={changeStatusHandler} loading={changeStatusLoading} />
             {responses && responses.data.length > 0 && <ResponseList
               data={responses.data}
               paginationProps={{

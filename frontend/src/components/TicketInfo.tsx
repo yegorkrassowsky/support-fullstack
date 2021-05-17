@@ -3,17 +3,22 @@ import {ITicket} from '../interfaces'
 
 type TicketInfoProps = {
   ticket: ITicket
+  changeStatusHandler: () => void
+  loading: boolean
 }
-const TicketInfo: React.FC<TicketInfoProps> = ({ticket}) => {
+const TicketInfo: React.FC<TicketInfoProps> = ({ticket, changeStatusHandler, loading}) => {
   const {id, subject, content, status} = ticket
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
-
+  const changeStatusLoading = <><span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</>
+  const changeStatusClasses = ['btn', (status ? 'btn-outline-danger' : 'btn-outline-success')]
   return (
     <div className="ticket-info">
       <div className="ticket-header">
         <span className="ticket-subject">#{id}. {subject}</span>
         <div className="controls">
-          <button type="button" className="btn btn-outline-secondary">{openCloseBtnText}</button>
+          <button disabled={loading} type="button" className={changeStatusClasses.join(' ')} onClick={changeStatusHandler}>
+            {loading ? changeStatusLoading : openCloseBtnText}
+          </button>
         </div>
       </div>
       <div className="ticket-body" dangerouslySetInnerHTML={{__html:content}}></div>

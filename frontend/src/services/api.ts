@@ -117,7 +117,19 @@ const useAPI = () => {
         setLoading(false)
       })
   }, [])
-  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, gotoTicket, getData, setData}
+
+  const changeStatus = useCallback((id: string, status: number, setTicketData) => {
+    setLoading(true)
+    request.put(`/api/ticket/${id}`, {status})
+      .then(response => {
+        if(response.data !== undefined) {
+          setTicketData(response.data)
+        }
+      })
+      .catch(err => {})
+      .then(() => setLoading(false))
+  }, [])
+  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
 }
 
 export default useAPI
