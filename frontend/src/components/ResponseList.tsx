@@ -25,6 +25,7 @@ const ResponseList: React.FC<ResponseListProps> = ({data, paginationProps, loadi
           }
           return (
             <Response
+              key={response.id}
               {...response}
               showDate={showDate}
               loading={loading}

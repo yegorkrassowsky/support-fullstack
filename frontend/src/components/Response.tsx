@@ -20,7 +20,7 @@ const Response: React.FC<IResponse> = ({
         {loading && <Loader />}
         {author_pos === 'Client' && <span className="response-icon bg-warning"><i className="fas fa-question"></i></span>}
         {author_pos === 'Agent' && <span className="response-icon bg-success"><i className="fas fa-reply fa-flip-horizontal"></i></span>}
-        <div className="response-content" id={`response-content-${id}`}>
+        <div className="response-content">
           <div className="response-header">
             <div className="response-author">
               <span className="response-author-name">{author}</span>
