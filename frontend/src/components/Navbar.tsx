@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import {useStore} from '../store'
+import {useStore} from '../services/store'
 import useAPI from '../services/api'
 
 const Navbar: React.FC = () => {
-  const {loggedIn, userName} = useStore()  
+  const {auth} = useStore()
   const {logout} = useAPI()
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary main-navbar">
@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse">
-          {loggedIn ? (
+          {auth.loggedIn ? (
             <>
               <ul className="navbar-nav">
                 <li className="nav-item">
@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
                 </li>
               </ul>
               <ul className="navbar-nav">
-                <span className="navbar-text">{userName}</span>
+                <span className="navbar-text">{auth.userName}</span>
                 <li className="nav-item"><button className="btn btn-link nav-link" onClick={logout}>Logout</button></li>
               </ul>
             </>

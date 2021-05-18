@@ -8,7 +8,7 @@ import PageLimit from '../components/PageLimit'
 import StatusFilter from '../components/StatusFilter'
 import {ITicket} from '../interfaces'
 import {userRoles} from '../constants'
-import {useStore} from '../store'
+import {useStore} from '../services/store'
 
 const supportedParams = ['page', 'limit', 'status']
 

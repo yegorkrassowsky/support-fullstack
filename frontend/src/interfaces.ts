@@ -26,3 +26,9 @@ export interface IPagination {
   onPageChanged: (page: number) => void
   pageNeighbours?: number
 }
+
+export interface IAuth {
+  loggedIn: boolean
+  userName: string
+  userRoles: string[]
+}

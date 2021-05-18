@@ -4,13 +4,13 @@ import TicketListPage from './pages/TicketListPage'
 import TicketPage from './pages/TicketPage'
 import LoginPage from './pages/LoginPage'
 import NewTicketPage from './pages/NewTicketPage'
-import {useStore} from './store'
+import {useStore} from './services/store'
 import {userRoles} from './constants'
 
 const Routes: React.FC = () => {
-  const {loggedIn, hasRole} = useStore()
+  const {auth, hasRole} = useStore()
 
-  if(loggedIn) {
+  if(auth.loggedIn) {
     return (
       <Switch>
         <Route path='/' exact component={TicketListPage} />

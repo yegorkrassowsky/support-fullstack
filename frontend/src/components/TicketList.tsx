@@ -1,7 +1,7 @@
 import React from 'react'
 import Ticket from './Ticket'
 import {ITicket} from '../interfaces'
-import {useStore} from '../store'
+import {useStore} from '../services/store'
 import {userRoles} from '../constants'
 
 type TicketListProps = {

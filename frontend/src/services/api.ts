@@ -1,6 +1,6 @@
 import {useState, useCallback} from 'react'
 import axios from 'axios'
-import {useStore} from '../store'
+import {useStore} from '../services/store'
 import {useHistory} from 'react-router-dom'
 
 type LoginProps = {
@@ -34,7 +34,8 @@ const useAPI = () => {
         request.post('/login', params)
           .then(response => {
             if(response.status === 200 && response.data !== undefined) {
-              storeLogin(response.data)
+              const {userRoles, userName} = response.data
+              storeLogin(userRoles, userName)
             } else {
               setLoading(false)
             }

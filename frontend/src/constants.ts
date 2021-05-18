@@ -15,3 +15,8 @@ export const userRoles = {
   agent: 'agent',
   client: 'client',
 }
+
+export enum AuthActionTypes {
+  LOGIN = 'LOGIN',
+  LOGOUT = 'LOGOUT',
+}

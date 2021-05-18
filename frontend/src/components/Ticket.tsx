@@ -1,7 +1,7 @@
 import useAPI from '../services/api'
 import {ITicket} from '../interfaces'
 import CONSTANTS, {ticketStatuses, userRoles} from '../constants'
-import {useStore} from '../store'
+import {useStore} from '../services/store'
 
 const Ticket: React.FC<ITicket> = ({id, subject, author, agent, status, updated_at}) => {
   const {hasRole} = useStore()
