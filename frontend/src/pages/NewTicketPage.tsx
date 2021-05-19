@@ -5,9 +5,11 @@ import Loader from '../components/Loader'
 import Editor from '../components/Editor'
 
 const NewTicketPage: React.FC = () => {
-  const {newTicket, loading, errors, getError} = useAPI()
-  const [subject, setSubject] = useState<string>('')
+  const {newTicket, loading, errors} = useAPI()
   const validated = !!errors
+  const subjectErrors = errors?.subject || null
+  const contentErrors = errors?.content || null
+  const [subject, setSubject] = useState<string>('')
   const [editorReady, setEditorReady] = useState<boolean>(false)
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
@@ -27,17 +29,13 @@ const NewTicketPage: React.FC = () => {
   let containerClass = ['new-ticket-container']
   let subjectClass = ['form-control']
 
-  if(errors) {
-    subjectClass.push(getError('subject') ? 'is-invalid' : 'is-valid')
+  if(validated) {
+    subjectClass.push(subjectErrors ? 'is-invalid' : 'is-valid')
   }
 
   if(editorReady) {
     containerClass.push('ready')
   }
-
-  const subjectErrors = getError('subject') ? <InputErrors errors={getError('subject')} /> : null
-  const contentErrors = getError('content') ? <InputErrors errors={getError('content')} /> : null
-
   
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,12 +59,12 @@ const NewTicketPage: React.FC = () => {
             <div className="mb-3">
               <label htmlFor="ticketInputSubject" className="form-label">Subject</label>
               <input value={subject} onChange={subjectHandler} type="text" className={subjectClass.join(' ')} id="ticketInputSubject" />
-              {subjectErrors}
+              {subjectErrors && <InputErrors errors={subjectErrors} />}
             </div>
             <div className="mb-3">
               <label className="form-label" onClick={()=>editorRef.current.focus()}>Content</label>
-              <Editor validated={validated} errors={getError('content')} setEditor={setEditor} />
-              {contentErrors}
+              <Editor validated={validated} errors={!!contentErrors} setEditor={setEditor} />
+              {contentErrors && <InputErrors errors={contentErrors} />}
             </div>
             {loading ? (
             <button className="btn btn-primary" type="button" disabled>

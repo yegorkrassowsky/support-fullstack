@@ -11,15 +11,14 @@ type ReplyProps = {
 }
 
 const Reply: React.FC<ReplyProps> = ({ticketId, setEditorReady, addResponse}) => {
-  const {newResponse, loading, errors, getError} = useAPI()
+  const {newResponse, loading, errors} = useAPI()
+  const contentErrors = errors?.content || null
+
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
     editorRef.current = editor
     setEditorReady()
   }
-
-  const validated = !!errors
-  const contentErrors = getError('content') ? <InputErrors errors={getError('content')} /> : null
 
   useEffect(()=>{
     if(editorRef.current !== undefined) {
@@ -49,8 +48,8 @@ const Reply: React.FC<ReplyProps> = ({ticketId, setEditorReady, addResponse}) =>
           <label className="form-label" onClick={()=>editorRef.current.focus()}>Add response</label>
         </div>
         <div className="form-body">
-          <Editor validated={validated} errors={getError('content')} setEditor={setEditor} />
-          {contentErrors}
+          <Editor validated={!!errors} errors={!!contentErrors} setEditor={setEditor} />
+          {contentErrors && <InputErrors errors={contentErrors} />}
         </div>
         <div className="form-footer">
           {loading ? (

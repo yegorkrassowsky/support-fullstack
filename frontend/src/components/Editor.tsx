@@ -2,12 +2,12 @@ import React from 'react'
 import { Editor as TinyMCE } from '@tinymce/tinymce-react'
 
 type EditorProps = {
-  errors: string[] | null
+  errors: boolean
   validated: boolean
   setEditor: (editor: any) => void
 }
 
-const Editor: React.FC<EditorProps> = ({errors, validated, setEditor}) => {
+const Editor: React.FC<EditorProps> = ({errors = false, validated = false, setEditor}) => {
   let contentClass = ['tinymce-wrapper']
   if(validated) {
     contentClass.push(errors ? 'is-invalid' : 'is-valid')

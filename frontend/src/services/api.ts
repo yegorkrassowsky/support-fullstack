@@ -9,7 +9,7 @@ type LoginProps = {
 }
 
 type ErrorsProps = {
-  [key: string]: string[]
+  [key: string]: string[],
 } | null
 
 const request = axios.create({
@@ -25,7 +25,6 @@ const useAPI = () => {
   const [errors, setErrors] = useState<ErrorsProps>(null)
 
   const getData = (field: string, defaultValue: any = null) => data && field in data && data[field] !== null ? data[field] : defaultValue
-  const getError = (field: string, defaultValue: any = null) => errors && field in errors ? errors[field] : defaultValue
 
   const login = useCallback((params: LoginProps) => {
     setLoading(true)
@@ -110,6 +109,7 @@ const useAPI = () => {
           addResponse(response.data)
         }
         setLoading(false)
+        setErrors(null)
       })
       .catch(err => {
         if(err.response.data.errors !== undefined){
@@ -130,7 +130,7 @@ const useAPI = () => {
       .catch(err => {})
       .then(() => setLoading(false))
   }, [])
-  return {loading, errors, getError, login, logout, getTickets, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
+  return {loading, errors, login, logout, getTickets, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
 }
 
 export default useAPI

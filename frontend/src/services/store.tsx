@@ -30,8 +30,6 @@ const useStore = () => {
 const StoreProvider: React.FC = ( { children } ) => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const {auth} = state
-  console.log(auth);
-    
 
   const login: LoginType = (userRoles, userName) => {
     dispatch({
