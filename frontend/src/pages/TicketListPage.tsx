@@ -14,11 +14,11 @@ const supportedParams = ['page', 'limit', 'status']
 type DataQueryProps = {
   page: number
   limit: number
-  status: string
+  status: number
 }
 const DEFAULT_LIMIT = 10
 const DEFAULT_PAGE = 1
-const DEFAULT_STATUS = ''
+const DEFAULT_STATUS = null
 
 const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
   const obj: any = Array.from(urlParams)
@@ -28,23 +28,29 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
         [param[0]]: param[1]
       };
     })
-    .reduce((acc, cur) => ({ ...acc, ...cur }), {});
+    .reduce((acc, cur) => ({ ...acc, ...cur }), {})
 
-  const keys = Object.keys(obj);
+  const keys = Object.keys(obj)
 
-  if (!keys.includes("page")) {
-    obj.page = DEFAULT_PAGE;
+  if (keys.includes("page")) {
+    obj.page = +obj.page
+  } else {
+    obj.page = DEFAULT_PAGE
   }
 
-  if (!keys.includes("limit")) {
-    obj.limit = DEFAULT_LIMIT;
+  if (keys.includes("limit")) {
+    obj.limit = +obj.limit
+  } else {
+    obj.limit = DEFAULT_LIMIT
   }
 
-  if (!keys.includes("status")) {
-    obj.status = DEFAULT_STATUS;
+  if (keys.includes("status")) {
+    obj.status = +obj.status
+  } else {
+    obj.status = DEFAULT_STATUS
   }
 
-  return obj as DataQueryProps;
+  return obj as DataQueryProps
 }
 
 const TicketListPage: React.FC = () => {
@@ -59,19 +65,17 @@ const TicketListPage: React.FC = () => {
   const queryParams = useMemo(() => {
     return getQueryParams(urlParams);
   }, [urlParams])
-  const currentPage = +queryParams.page
-  const currentStatus = queryParams.status
-  const currentLimit = +queryParams.limit
+  const {page: currentPage, status: currentStatus, limit: currentLimit} = queryParams
   const resetCurrentPage = () => onPageChanged(1)
   const onPageChanged = (page: number) => {
     urlParams.set('page', `${page}`)
     updateURL()
   }
-  const onStatusChanged = (status: string) => {
+  const onStatusChanged = (status: number) => {
     if(status === currentStatus) {
-      urlParams.set('status', DEFAULT_STATUS)
+      urlParams.set('status', `${DEFAULT_STATUS}`)
     } else {
-      urlParams.set('status', status)
+      urlParams.set('status', `${status}`)
     }
     resetCurrentPage()
   }
