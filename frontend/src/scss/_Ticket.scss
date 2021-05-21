@@ -132,14 +132,23 @@
       }
       &.loading {
         .response-content,
-        .response-icon,
         .response-date,
         &:before {
-          opacity: 0.4;
+          animation: response-out 0.5s ease-in forwards;
+        }
+        .response-icon {
+          animation: response-icon-out 0.5s ease-in forwards;
+        }
+        .response {
+          .spinner-container {
+            animation: response-in 0.5s ease-in forwards;
+          }
         }
       }
       &.loaded {
-        .response-content {
+        .response-content,
+        .response-date,
+        &.before {
           animation: response-in 0.5s ease-in forwards;
         }
         .response-icon {
@@ -181,11 +190,30 @@
   }
 }
 
+@keyframes response-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.4;
+  }
+}
+
 @keyframes response-icon-in {
   0% {
     transform: rotateY(90deg);
   }
   100% {
     transform: rotateY(0deg);
+  }
+}
+
+@keyframes response-icon-out {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(90deg);
   }
 }
