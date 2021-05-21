@@ -1,3 +1,4 @@
+
 export interface ITicket {
   id: number
   subject: string
@@ -27,8 +28,13 @@ export interface IPagination {
   pageNeighbours?: number
 }
 
-export interface IAuth {
+export interface IAuthState {
   loggedIn: boolean
   userName: string
   userRoles: string[]
+}
+
+export interface ITicketListState {
+  data: ITicket[]
+  totalPages: number
 }

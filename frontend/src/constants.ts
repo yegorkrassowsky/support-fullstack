@@ -2,6 +2,7 @@ const CONSTANTS = {
   LEFT_PAGE: 'LEFT',
   RIGHT_PAGE: 'RIGHT',
   NOT_ASSIGNED_TICKET_STATUS: 'not assigned',
+  INIT: 'INIT',
 }
 
 export default CONSTANTS
@@ -18,5 +19,9 @@ export const userRoles = {
 
 export enum AuthActionTypes {
   LOGIN = 'LOGIN',
-  LOGOUT = 'LOGOUT',
+}
+
+export enum TicketListActionTypes {
+  SET = 'TICKET_LIST_SET',
+  UPDATE_TICKET = 'TICKET_LIST_UPDATE_TICKET',
 }

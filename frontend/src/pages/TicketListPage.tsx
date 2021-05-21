@@ -6,7 +6,6 @@ import Loader from '../components/Loader'
 import Pagination from '../components/Pagination'
 import PageLimit from '../components/PageLimit'
 import StatusFilter from '../components/StatusFilter'
-import {ITicket} from '../interfaces'
 import {userRoles} from '../constants'
 import {useStore} from '../services/store'
 
@@ -49,10 +48,9 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 }
 
 const TicketListPage: React.FC = () => {
-  const {hasRole} = useStore()
-  const {getTickets, getData, loading} = useAPI()
-  const tickets: ITicket[] = getData('data', [])
-  const totalPages: number = getData('last_page', 1)
+  const {hasRole, ticketList} = useStore()
+  const {data: tickets, totalPages} = ticketList
+  const {getTickets, loading} = useAPI()
   const history = useHistory()
   const location = useLocation()
   const urlParams = useMemo(() => {

@@ -1,10 +1,5 @@
 import {AuthActionTypes} from '../constants'
-
-type AuthState = {
-  loggedIn: boolean
-  userName: string
-  userRoles: string[]
-}
+import {IAuthState} from '../interfaces'
 
 const defaults = {
   loggedIn: false,
@@ -14,7 +9,7 @@ const defaults = {
 
 const savedRoles = sessionStorage.getItem('userRoles')
 
-export const initialAuthState: AuthState = {
+export const initialAuthState: IAuthState = {
   loggedIn: sessionStorage.getItem('loggedIn') === 'true' || defaults.loggedIn,
   userName: sessionStorage.getItem('userName') || defaults.userName,
   userRoles: savedRoles ? JSON.parse(savedRoles) : defaults.userRoles
@@ -22,9 +17,8 @@ export const initialAuthState: AuthState = {
 
 type AuthAction =
 | {type: AuthActionTypes.LOGIN, userName: string, userRoles: string[]}
-| {type: AuthActionTypes.LOGOUT}
 
-const authReducer = (state: AuthState, action: AuthAction): AuthState => {
+const authReducer = (state: IAuthState, action: AuthAction): IAuthState => {
   switch (action.type) {
     case AuthActionTypes.LOGIN:
       return {
@@ -32,8 +26,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         userName: action.userName,
         userRoles: action.userRoles,
       }
-    case AuthActionTypes.LOGOUT:
-      return defaults
     default:
       return state
   }

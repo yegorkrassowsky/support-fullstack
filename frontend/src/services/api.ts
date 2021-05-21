@@ -19,7 +19,7 @@ const request = axios.create({
 
 const useAPI = () => {
   const history = useHistory()
-  const {login: storeLogin, logout: storeLogout} = useStore()
+  const {login: storeLogin, logout: storeLogout, setTicketList} = useStore()
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<any>(null)
   const [errors, setErrors] = useState<ErrorsProps>(null)
@@ -62,12 +62,12 @@ const useAPI = () => {
     request.get('/api/ticket', {params})
       .then(response => {
         if(response.data !== undefined) {
-          setData(response.data)
+          setTicketList({data: response.data.data, totalPages: response.data.last_page})
         }
       })
       .catch(err => {})
       .then(()=>setLoading(false))
-  }, [])
+  }, [setTicketList])
 
   const gotoTicket = useCallback( (id) => history.push(`/ticket/${id}`), [history])
 
