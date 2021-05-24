@@ -3,11 +3,12 @@ import {TicketListActionTypes} from '../constants'
 
 export type TicketListAction =
 | {type: TicketListActionTypes.SET, data: ITicket[], totalPages: number}
-| {type: TicketListActionTypes.UPDATE_TICKET, ticket: ITicket}
+| {type: TicketListActionTypes.SET_ITEM, ticket: ITicket}
 | {type: TicketListActionTypes.SET_PAGE, page: number}
 | {type: TicketListActionTypes.SET_LIMIT, limit: number}
 | {type: TicketListActionTypes.SET_STATUS, status: number | null}
 | {type: TicketListActionTypes.SET_LOADING, loading: boolean}
+| {type: TicketListActionTypes.SET_ITEM_LOADING, id: number, loading: boolean}
 
 const defaultParams = {
   page: 1,
@@ -22,15 +23,26 @@ export const initialTicketListState = {
   params: defaultParams
 }
 
+const ticket = (state: ITicket, action: TicketListAction): ITicket => {
+  switch(action.type) {
+    case TicketListActionTypes.SET_ITEM:
+      return state.id === action.ticket.id ? action.ticket : state
+    case TicketListActionTypes.SET_ITEM_LOADING:
+      return state.id === action.id ? {...state, loading: action.loading} : state
+    default:
+      return state
+  }
+
+}
+
 const ticketListReducer = (state: ITicketListState, action: TicketListAction): ITicketListState => {  
   switch(action.type) {
     case TicketListActionTypes.SET:
       return {...state, data: action.data, totalPages: action.totalPages}
-    case TicketListActionTypes.UPDATE_TICKET:
-      const data = state.data.map((ticket: ITicket) => {
-        return ticket.id === action.ticket.id ? action.ticket : ticket
-      })
-      return {...state, data}
+    case TicketListActionTypes.SET_ITEM:
+      return {...state, data: state.data.map((t: ITicket) => ticket(t, action))}
+    case TicketListActionTypes.SET_ITEM_LOADING:
+      return {...state, data: state.data.map((t: ITicket) => ticket(t, action))}
     case TicketListActionTypes.SET_PAGE:
       return {...state, params: {...state.params, page: action.page}}
     case TicketListActionTypes.SET_STATUS:

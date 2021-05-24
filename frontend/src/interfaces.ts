@@ -8,6 +8,7 @@ export interface ITicket {
   author: string
   created_at: string
   updated_at: string
+  loading?: boolean
 }
 
 export interface IResponse {

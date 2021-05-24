@@ -97,11 +97,16 @@ class TicketController extends Controller
         if ( $user->hasRole('client') && $user->id !== $ticket->author_id ) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
-        if ( ! $user->hasRole('admin') && $user->hasRole('agent') && $user->id !== $ticket->agent_id ) {
+        if ( ! $user->hasRole('admin') && $user->hasRole('agent') && $ticket->agent_id && $user->id !== $ticket->agent_id ) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
         if ( ! $request->has('status') ) {
             return response()->json(['error' => 'Invalid data'], 400);
+        }
+
+        if ( empty( $ticket->agent_id ) && $user->hasRole('agent') ) {
+            $ticket->agent_id = $user->id;
+            $ticket->save();
         }
         $status = intval($request->get('status'));
         if ( in_array( $status, [0, 1] ) && $status !== $ticket->status ) {

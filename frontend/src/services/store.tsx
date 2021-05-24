@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useReducer, useCallback, useEffect} from 'react';
 import {reducer, initialState} from '../reducers/index'
-import CONSTANTS, {AuthActionTypes, TicketListActionTypes} from '../constants'
+import CONSTANTS, {AuthActionTypes, TicketListActionTypes, ticketStatuses} from '../constants'
 import {IAuthState, ITicket, ITicketListState} from '../interfaces'
 import {request} from '../services/api'
 
@@ -13,16 +13,21 @@ type SetTicketListPageType = (page: number) => void
 type SetTicketListStatusType = (status: number | null) => void
 type SetTicketListLimitType = (limit: number) => void
 type SetTicketListLoadingType = (loading: boolean) => void
+type SetTicketListItemType = (ticket: ITicket) => void
+type SetTicketListItemLoadingType = (id: number, loading: boolean) => void
+type TakeTicketType = (id: number) => void
+
 type ContextType = {
   auth: IAuthState
   ticketList: ITicketListState
   hasRole: HasRoleType
   login: LoginType
   logout: LogoutType
-  updateTicketListItem: UpdateTicketListItemType
   setTicketListPage: SetTicketListPageType
   setTicketListStatus: SetTicketListStatusType
   setTicketListLimit: SetTicketListLimitType
+  setTicketListItem: SetTicketListItemType
+  takeTicket: TakeTicketType
 }
 
 const initialStoreValues = {
@@ -30,10 +35,11 @@ const initialStoreValues = {
   hasRole: () => false,
   login: () => {},
   logout: () => {},
-  updateTicketListItem: () => {},
   setTicketListPage: () => {},
   setTicketListStatus: () => {},
   setTicketListLimit: () => {},
+  setTicketListItem: () => {},
+  takeTicket: () => {},
 }
 
 const StoreContext = createContext<ContextType>(initialStoreValues)
@@ -65,12 +71,9 @@ const StoreProvider: React.FC = ( { children } ) => {
     sessionStorage.removeItem('userName')
   }
   const hasRole: HasRoleType = (userRole) => userRoles.includes(userRole)
-  const setTicketList: SetTicketListType = useCallback(({data, totalPages}) => {    
+  const setTicketList: SetTicketListType = useCallback(({data, totalPages}) => {
     dispatch({type: TicketListActionTypes.SET, data, totalPages})
   }, [])
-  const updateTicketListItem: UpdateTicketListItemType = (ticket) => {
-    dispatch({type: TicketListActionTypes.UPDATE_TICKET, ticket})
-  }
   const setTicketListPage: SetTicketListPageType = useCallback((page) => {
     dispatch({type: TicketListActionTypes.SET_PAGE, page})
   }, [])
@@ -82,6 +85,12 @@ const StoreProvider: React.FC = ( { children } ) => {
   }, [])
   const setTicketListLoading: SetTicketListLoadingType = useCallback((loading) => {
     dispatch({type: TicketListActionTypes.SET_LOADING, loading})
+  }, [])
+  const setTicketListItemLoading: SetTicketListItemLoadingType = useCallback((id, loading) => {
+    dispatch({type: TicketListActionTypes.SET_ITEM_LOADING, id, loading})
+  }, [])
+  const setTicketListItem: SetTicketListItemType = useCallback((ticket) => {
+    dispatch({type: TicketListActionTypes.SET_ITEM, ticket})
   }, [])
 
   const getTickets = useCallback(params => {
@@ -102,14 +111,25 @@ const StoreProvider: React.FC = ( { children } ) => {
     }
   }, [getTickets, ticketListParams, loggedIn])
 
+  const takeTicket: TakeTicketType = useCallback((id) => {
+    setTicketListItemLoading(id, true)
+    request.put(`/api/ticket/${id}`, {status: 1})
+      .then(response => {
+        if(response.data !== undefined) {
+          setTicketListItem(response.data)
+        }
+      })
+      .catch(err => {})
+  }, [setTicketListItem, setTicketListItemLoading])
+
   const functions = {
     login,
     logout,
     hasRole,
-    updateTicketListItem,
     setTicketListPage,
     setTicketListStatus,
     setTicketListLimit,
+    takeTicket,
   }
 
   return <StoreContext.Provider value={{...state, ...functions }}>{children}</StoreContext.Provider>
