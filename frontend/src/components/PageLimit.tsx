@@ -1,14 +1,12 @@
 import React from 'react'
+import {useStore} from '../services/store'
 
-type PageLimitProps = {
-  currentLimit: number
-  onChange: (limit: number) => void
-  limits?: number[]
-}
-
-const PageLimit: React.FC<PageLimitProps> = ({currentLimit, onChange, limits = [10, 25, 50]}) => {
+const PageLimit: React.FC = () => {
+  const {ticketList, setTicketListLimit} = useStore()
+  const currentLimit = ticketList.params.limit
+  const limits = [10, 25, 50]
   const changeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(+e.target.value)
+    setTicketListLimit(+e.target.value)
   }
   const labelText = "Items per page"
   return (

@@ -12,14 +12,14 @@ type ErrorsProps = {
   [key: string]: string[],
 } | null
 
-const request = axios.create({
+export const request = axios.create({
   baseURL: 'http://localhost/api',
   withCredentials: true,
 })
 
 const useAPI = () => {
   const history = useHistory()
-  const {login: storeLogin, logout: storeLogout, setTicketList} = useStore()
+  const {login: storeLogin, logout: storeLogout} = useStore()
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<any>(null)
   const [errors, setErrors] = useState<ErrorsProps>(null)
@@ -56,18 +56,6 @@ const useAPI = () => {
         }
       })
   }, [storeLogout])
-
-  const getTickets = useCallback(params => {
-    setLoading(true)
-    request.get('/api/ticket', {params})
-      .then(response => {
-        if(response.data !== undefined) {
-          setTicketList({data: response.data.data, totalPages: response.data.last_page})
-        }
-      })
-      .catch(err => {})
-      .then(()=>setLoading(false))
-  }, [setTicketList])
 
   const gotoTicket = useCallback( (id) => history.push(`/ticket/${id}`), [history])
 
@@ -130,7 +118,7 @@ const useAPI = () => {
       .catch(err => {})
       .then(() => setLoading(false))
   }, [])
-  return {loading, errors, login, logout, getTickets, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
+  return {loading, errors, login, logout, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
 }
 
 export default useAPI

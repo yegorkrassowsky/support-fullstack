@@ -1,111 +1,21 @@
-import React, {useEffect, useMemo} from 'react'
-import { useHistory, useLocation, Link } from 'react-router-dom'
-import useAPI from '../services/api'
+import React from 'react'
+import {Link} from 'react-router-dom'
 import TicketList from '../components/TicketList'
 import Loader from '../components/Loader'
-import Pagination from '../components/Pagination'
+import TicketListPagination from '../components/TicketListPagination'
 import PageLimit from '../components/PageLimit'
 import StatusFilter from '../components/StatusFilter'
 import {userRoles} from '../constants'
 import {useStore} from '../services/store'
 
-const supportedParams = ['page', 'limit', 'status']
-
-type DataQueryProps = {
-  page: number
-  limit: number
-  status: number
-}
-const DEFAULT_LIMIT = 10
-const DEFAULT_PAGE = 1
-const DEFAULT_STATUS = null
-
-const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
-  const obj: any = Array.from(urlParams)
-    .filter((param) => supportedParams.includes(param[0]))
-    .map((param) => {
-      return {
-        [param[0]]: param[1]
-      };
-    })
-    .reduce((acc, cur) => ({ ...acc, ...cur }), {})
-
-  const keys = Object.keys(obj)
-
-  if (keys.includes("page")) {
-    obj.page = +obj.page
-  } else {
-    obj.page = DEFAULT_PAGE
-  }
-
-  if (keys.includes("limit")) {
-    obj.limit = +obj.limit
-  } else {
-    obj.limit = DEFAULT_LIMIT
-  }
-
-  if (keys.includes("status")) {
-    obj.status = +obj.status
-  } else {
-    obj.status = DEFAULT_STATUS
-  }
-
-  return obj as DataQueryProps
-}
-
 const TicketListPage: React.FC = () => {
   const {hasRole, ticketList} = useStore()
-  const {data: tickets, totalPages} = ticketList
-  const {getTickets, loading} = useAPI()
-  const history = useHistory()
-  const location = useLocation()
-  const urlParams = useMemo(() => {
-    return new URLSearchParams(location.search);
-  }, [location.search])
-  const queryParams = useMemo(() => {
-    return getQueryParams(urlParams);
-  }, [urlParams])
-  const {page: currentPage, status: currentStatus, limit: currentLimit} = queryParams
-  const resetCurrentPage = () => onPageChanged(1)
-  const onPageChanged = (page: number) => {
-    urlParams.set('page', `${page}`)
-    updateURL()
-  }
-  const onStatusChanged = (status: number) => {
-    if(status === currentStatus) {
-      urlParams.set('status', `${DEFAULT_STATUS}`)
-    } else {
-      urlParams.set('status', `${status}`)
-    }
-    resetCurrentPage()
-  }
-  const onPageLimitChanged = (limit: number) => {
-    urlParams.set('limit', `${limit}`)
-    resetCurrentPage()
-  }
-  const updateURL = () => {
-    if (urlParams.get('page') === `${DEFAULT_PAGE}`) {
-      urlParams.delete("page");
-    }
-    if (urlParams.get("limit") === `${DEFAULT_LIMIT}`) {
-      urlParams.delete("limit");
-    }
-    if (urlParams.get("status") === `${DEFAULT_STATUS}`) {
-      urlParams.delete("status");
-    }
-    history.push({
-      pathname: location.pathname,
-      search: `?${urlParams}`
-    })
-  }
-  const paginationProps = {currentPage, totalPages, onPageChanged, pageNeighbours: 1}  
+  const {data: tickets, loading} = ticketList
+
   const listContainerClass = ['ticket-list-container']
   if(loading) {
     listContainerClass.push('loading')
   }
-  useEffect(()=>{
-    getTickets(queryParams)
-  }, [queryParams, getTickets])
   return (
     <div className="ticket-list-page">
       <div className="ticket-list-header main-header">
@@ -116,15 +26,15 @@ const TicketListPage: React.FC = () => {
           </div>
       )}
         <div className="d-flex justify-content-between my-4">
-          <StatusFilter currentStatus={currentStatus} onChange={onStatusChanged} />
-          <PageLimit currentLimit={currentLimit} onChange={onPageLimitChanged} />
+          <StatusFilter />
+          <PageLimit />
         </div>
       </div>
       <div className={listContainerClass.join(' ')}>
         <Loader />
         {tickets.length ? <TicketList tickets={tickets} /> : <div className="tickets-not-found">No tickets found</div> }
       </div>
-      <Pagination {...paginationProps} />
+      <TicketListPagination />
     </div>
   )
 }

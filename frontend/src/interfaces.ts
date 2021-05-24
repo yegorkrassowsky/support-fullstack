@@ -37,4 +37,12 @@ export interface IAuthState {
 export interface ITicketListState {
   data: ITicket[]
   totalPages: number
+  loading: boolean
+  params: ITicketListParams
+}
+
+export interface ITicketListParams {
+  page: number
+  limit: number
+  status: number | null
 }
