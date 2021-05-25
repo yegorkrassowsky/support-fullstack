@@ -15,7 +15,7 @@ const Ticket: React.FC<ITicket> = ({id, subject, author, agent, status, updated_
     takeTicket(id)
   }
   const takeBtn = (<button disabled={loading} className="btn btn-sm btn-success" onClick={takeHandler}>{loading ? 'Loading...' : 'Take'}</button>)
-  const ticketAgent = agent ? agent : status ? takeBtn : freeBadge
+  const ticketAgent = agent ? agent : hasRole('agent') && status ? takeBtn : freeBadge
   const replied = new Date(updated_at).toLocaleString()
   const badgeClasses = ['bg-danger', 'bg-warning', 'bg-success']
   const badgeClass = ['badge', ...[badgeClasses[ticketStatus]]].join(' ')
