@@ -1,7 +1,7 @@
 import {AuthActionTypes} from '../constants'
 import {IAuthState} from '../interfaces'
 
-const defaults = {
+export const authDefaults = {
   loggedIn: false,
   userName: '',
   userRoles: []
@@ -10,9 +10,9 @@ const defaults = {
 const savedRoles = sessionStorage.getItem('userRoles')
 
 export const initialAuthState: IAuthState = {
-  loggedIn: sessionStorage.getItem('loggedIn') === 'true' || defaults.loggedIn,
-  userName: sessionStorage.getItem('userName') || defaults.userName,
-  userRoles: savedRoles ? JSON.parse(savedRoles) : defaults.userRoles
+  loggedIn: sessionStorage.getItem('loggedIn') === 'true' || authDefaults.loggedIn,
+  userName: sessionStorage.getItem('userName') || authDefaults.userName,
+  userRoles: savedRoles ? JSON.parse(savedRoles) : authDefaults.userRoles
 }
 
 type AuthAction =
