@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useReducer, useCallback, useEffect} from 'react';
 import {reducer, initialState} from '../reducers/index'
-import CONSTANTS, {AuthActionTypes, TicketListActionTypes, ticketStatuses} from '../constants'
+import CONSTANTS, {AuthActionTypes, TicketListActionTypes} from '../constants'
 import {IAuthState, ITicket, ITicketListState} from '../interfaces'
 import {request} from '../services/api'
 
@@ -8,7 +8,6 @@ type LoginType = (userRoles: string[], userName: string) => void
 type LogoutType = () => void
 type HasRoleType = (userRole: string) => boolean
 type SetTicketListType = (tickets: {data: ITicket[], totalPages: number}) => void
-type UpdateTicketListItemType = (ticket: ITicket) => void
 type SetTicketListPageType = (page: number) => void
 type SetTicketListStatusType = (status: number | null) => void
 type SetTicketListLimitType = (limit: number) => void
