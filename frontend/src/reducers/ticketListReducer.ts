@@ -1,4 +1,4 @@
-import {ITicketListState, ITicket} from '../interfaces'
+import {ITicketListState, ITicket, ITicketItemState} from '../interfaces'
 import {TicketListActionTypes} from '../constants'
 
 export type TicketListAction =
@@ -23,7 +23,7 @@ export const initialTicketListState = {
   params: defaultParams
 }
 
-const ticket = (state: ITicket, action: TicketListAction): ITicket => {
+const ticket = (state: ITicketItemState, action: TicketListAction): ITicket => {
   switch(action.type) {
     case TicketListActionTypes.SET_ITEM:
       return state.id === action.ticket.id ? action.ticket : state
@@ -40,9 +40,9 @@ const ticketListReducer = (state: ITicketListState, action: TicketListAction): I
     case TicketListActionTypes.SET:
       return {...state, data: action.data, totalPages: action.totalPages}
     case TicketListActionTypes.SET_ITEM:
-      return {...state, data: state.data.map((t: ITicket) => ticket(t, action))}
+      return {...state, data: state.data.map((t: ITicketItemState) => ticket(t, action))}
     case TicketListActionTypes.SET_ITEM_LOADING:
-      return {...state, data: state.data.map((t: ITicket) => ticket(t, action))}
+      return {...state, data: state.data.map((t: ITicketItemState) => ticket(t, action))}
     case TicketListActionTypes.SET_PAGE:
       return {...state, params: {...state.params, page: action.page}}
     case TicketListActionTypes.SET_STATUS:

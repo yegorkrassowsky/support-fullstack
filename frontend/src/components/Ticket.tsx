@@ -1,14 +1,13 @@
 import useAPI from '../services/api'
-import {ITicket} from '../interfaces'
+import {ITicketItemState} from '../interfaces'
 import CONSTANTS, {ticketStatuses, userRoles} from '../constants'
 import {useStore} from '../services/store'
 
-const Ticket: React.FC<ITicket> = ({id, subject, author, agent, status, updated_at, loading = false}) => {
+const Ticket: React.FC<ITicketItemState> = ({id, subject, author, agent, status, updated_at, loading = false}) => {
   const {hasRole, takeTicket} = useStore()
   const {gotoTicket} = useAPI()
   const openTicketPage = () => gotoTicket(id)
-  const ticketStatus = ticketStatuses[status] === undefined ? 1 : status
-  const statusText = ticketStatuses[ticketStatus]
+  const statusText = ticketStatuses[status]
   const freeBadge = (<span className="badge bg-primary">{CONSTANTS.NOT_ASSIGNED_TICKET_STATUS}</span>)
   const takeHandler = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -18,7 +17,7 @@ const Ticket: React.FC<ITicket> = ({id, subject, author, agent, status, updated_
   const ticketAgent = agent ? agent : hasRole('agent') && status ? takeBtn : freeBadge
   const replied = new Date(updated_at).toLocaleString()
   const badgeClasses = ['bg-danger', 'bg-warning', 'bg-success']
-  const badgeClass = ['badge', ...[badgeClasses[ticketStatus]]].join(' ')
+  const badgeClass = ['badge', ...[badgeClasses[status]]].join(' ')
   return (
     <tr onClick={openTicketPage}>
       <th scope="row">{id}</th>

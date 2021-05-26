@@ -1,10 +1,12 @@
 import authReducer, {initialAuthState, authDefaults} from './authReducer'
 import ticketListReducer, {initialTicketListState} from './ticketListReducer'
+import ticketReducer, {initialTicketState} from './ticketReducer'
 import CONSTANTS from '../constants'
 
 const initialState = {
   auth: initialAuthState,
-  ticketList: initialTicketListState
+  ticketList: initialTicketListState,
+  ticket: initialTicketState,
 }
 
 function combineReducers(reducers: {[key: string]: Function}) {  
@@ -22,7 +24,8 @@ function combineReducers(reducers: {[key: string]: Function}) {
 
 const reducer = combineReducers({
   auth: authReducer,
-  ticketList: ticketListReducer
+  ticketList: ticketListReducer,
+  ticket: ticketReducer,
 })
 
 export { initialState, reducer }

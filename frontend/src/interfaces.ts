@@ -1,3 +1,8 @@
+import { FormErrorsType } from "./types";
+
+export interface ILoading {
+  loading: boolean
+}
 
 export interface ITicket {
   id: number
@@ -8,6 +13,9 @@ export interface ITicket {
   author: string
   created_at: string
   updated_at: string
+}
+
+export interface ITicketItemState extends ITicket {
   loading?: boolean
 }
 
@@ -20,6 +28,10 @@ export interface IResponse {
   author_pos: string
   showDate?: boolean
   loading?: boolean
+}
+
+export interface IResponses {
+  responses: IResponse[],
 }
 
 export interface IPagination {
@@ -35,10 +47,9 @@ export interface IAuthState {
   userRoles: string[]
 }
 
-export interface ITicketListState {
+export interface ITicketListState extends ILoading {
   data: ITicket[]
   totalPages: number
-  loading: boolean
   params: ITicketListParams
 }
 
@@ -46,4 +57,28 @@ export interface ITicketListParams {
   page: number
   limit: number
   status: number | null
+}
+
+export interface IErrors {
+  [key: string]: string[]
+}
+
+export interface IFormErrors {
+  errors: FormErrorsType
+}
+
+export interface IAddResponseState extends ILoading, IFormErrors {}
+
+export interface ITicketWithResponse {
+  ticket: ITicket
+  response: IResponse
+}
+
+export interface ITicketWithResponses extends IResponses {
+  data: ITicket | null
+  totalPages: number
+}
+export interface ITicketState extends ITicketWithResponses, ILoading, IResponses {
+  addResponse: IAddResponseState
+  changeStatusLoading: boolean
 }

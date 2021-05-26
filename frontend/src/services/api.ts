@@ -2,15 +2,12 @@ import {useState, useCallback} from 'react'
 import axios from 'axios'
 import {useStore} from '../services/store'
 import {useHistory} from 'react-router-dom'
+import {FormErrorsType} from '../types'
 
 type LoginProps = {
   email: string,
   password: string,
 }
-
-type ErrorsProps = {
-  [key: string]: string[],
-} | null
 
 export const request = axios.create({
   baseURL: 'http://localhost/api',
@@ -22,7 +19,7 @@ const useAPI = () => {
   const {login: storeLogin, logout: storeLogout} = useStore()
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<any>(null)
-  const [errors, setErrors] = useState<ErrorsProps>(null)
+  const [errors, setErrors] = useState<FormErrorsType>(null)
 
   const getData = (field: string, defaultValue: any = null) => data && field in data && data[field] !== null ? data[field] : defaultValue
 
@@ -75,50 +72,7 @@ const useAPI = () => {
       })
   }, [gotoTicket])
 
-  const getTicket = useCallback((id, page = 1) => {
-    setLoading(true)
-    request.get(`/api/ticket/${id}`, {params: {page}})
-      .then(response => {        
-        if(response.data !== undefined) {
-          setData(response.data)
-        }
-      })
-      .catch(err => {})
-      .then(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  const newResponse = useCallback((params, addResponse) => {
-    setLoading(true)
-    request.post('/api/response', params)
-      .then(response => {
-        if(response.data !== undefined) {
-          addResponse(response.data)
-        }
-        setLoading(false)
-        setErrors(null)
-      })
-      .catch(err => {
-        if(err.response.data.errors !== undefined){
-          setErrors(err.response.data.errors)    
-        }
-        setLoading(false)
-      })
-  }, [])
-
-  const changeStatus = useCallback((id: string, status: number, setTicketData) => {
-    setLoading(true)
-    request.put(`/api/ticket/${id}`, {status})
-      .then(response => {
-        if(response.data !== undefined) {
-          setTicketData(response.data)
-        }
-      })
-      .catch(err => {})
-      .then(() => setLoading(false))
-  }, [])
-  return {loading, errors, login, logout, newTicket, getTicket, newResponse, changeStatus, gotoTicket, getData, setData}
+  return {loading, errors, login, logout, newTicket, gotoTicket, getData, setData}
 }
 
 export default useAPI

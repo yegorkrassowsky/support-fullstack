@@ -1,13 +1,13 @@
 import React from 'react'
-import {ITicket} from '../interfaces'
+import { useStore } from '../services/store'
 
-type TicketInfoProps = {
-  ticket: ITicket
-  changeStatusHandler: () => void
-  loading: boolean
-}
-const TicketInfo: React.FC<TicketInfoProps> = ({ticket, changeStatusHandler, loading}) => {
-  const {id, subject, content, status} = ticket
+const TicketInfo: React.FC = () => {
+  const {ticket: {data: ticket, changeStatusLoading: loading}, changeStatus} = useStore()
+  const id = ticket?.id || null
+  const subject = ticket?.subject || null
+  const content = ticket?.content || null
+  const status = ticket?.status === undefined ? 1 : ticket.status
+  const changeStatusHandler = () => changeStatus(id!, status ? 0 : 1)
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
   const changeStatusLoading = <><span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</>
   const changeStatusClasses = ['btn', (status ? 'btn-outline-danger' : 'btn-outline-success')]
@@ -21,7 +21,7 @@ const TicketInfo: React.FC<TicketInfoProps> = ({ticket, changeStatusHandler, loa
           </button>
         </div>
       </div>
-      <div className="ticket-body" dangerouslySetInnerHTML={{__html:content}}></div>
+      {content && <div className="ticket-body" dangerouslySetInnerHTML={{__html:content}}></div>}
       <div className="ticket-footer">
         <a href="#newReply" className="btn btn-primary">Reply</a>
       </div>
