@@ -9,7 +9,7 @@ const TicketInfo: React.FC = () => {
   const status = ticket?.status === undefined ? 1 : ticket.status
   const changeStatusHandler = () => changeStatus(id!, status ? 0 : 1)
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
-  const changeStatusLoading = <><span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...</>
+  const changeStatusLoading = <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
   const changeStatusClasses = ['btn', (status ? 'btn-outline-danger' : 'btn-outline-success')]
   return (
     <div className="ticket-info">
