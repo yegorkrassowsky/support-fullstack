@@ -41,10 +41,17 @@ export interface IPagination {
   pageNeighbours?: number
 }
 
+export interface IFormErrors {
+  errors: FormErrorsType
+}
+
+export interface IFormState extends ILoading, IFormErrors {}
+
 export interface IAuthState {
   loggedIn: boolean
   userName: string
   userRoles: string[]
+  login: IFormState
 }
 
 export interface ITicketListState extends ILoading {
@@ -63,12 +70,6 @@ export interface IErrors {
   [key: string]: string[]
 }
 
-export interface IFormErrors {
-  errors: FormErrorsType
-}
-
-export interface IAddResponseState extends ILoading, IFormErrors {}
-
 export interface ITicketWithResponse {
   ticket: ITicket
   response: IResponse
@@ -79,8 +80,12 @@ export interface ITicketWithResponses extends IResponses {
   totalPages: number
 }
 export interface ITicketState extends ITicketWithResponses, ILoading, IResponses {
-  addResponse: IAddResponseState
+  addResponse: IFormState
   changeStatusLoading: boolean
 }
 
-export interface INewTicketState extends ILoading, IFormErrors {}
+export interface ILogin {
+  email: string,
+  password: string,
+}
+

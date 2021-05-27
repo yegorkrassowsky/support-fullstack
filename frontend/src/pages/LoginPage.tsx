@@ -1,11 +1,11 @@
 import React, {useState} from 'react'
-import useAPI from '../services/api'
+import {useStore} from '../services/store'
 import InputErrors from '../components/InputErrors'
 
 const LoginPage: React.FC = () => {
+  const {auth: {login: {loading, errors}}, login} = useStore()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const {loading, errors, login} = useAPI()
   const emailErrors = errors?.email || null
   const passwordErrors = errors?.password || null
 

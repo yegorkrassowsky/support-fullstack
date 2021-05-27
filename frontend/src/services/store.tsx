@@ -1,15 +1,17 @@
 import React, {createContext, useContext, useReducer, useCallback, useEffect} from 'react';
 import {reducer, initialState} from '../reducers/index'
 import CONSTANTS, {AuthActionTypes, TicketListActionTypes, TicketActionTypes, NewTicketActionTypes} from '../constants'
-import {IAuthState, INewTicketState, ITicket, ITicketListState, ITicketState, ITicketWithResponse, ITicketWithResponses} from '../interfaces'
-import {request} from '../services/api'
+import {IAuthState, ILogin, IFormState, ITicket, ITicketListState, ITicketState, ITicketWithResponse, ITicketWithResponses} from '../interfaces'
 import {FormErrorsType} from '../types'
 import useFunctions from '../functions'
+import axios from 'axios'
 
 type DispatchLoadingType = (loading: boolean) => void
 type DispatchErrorsType = (errors: FormErrorsType) => void
-type LoginType = (userRoles: string[], userName: string) => void
+type LoginType = (params: ILogin) => void
 type LogoutType = () => void
+type AuthLoginType = (userRoles: string[], userName: string) => void
+type AuthLogoutType = () => void
 type HasRoleType = (userRole: string) => boolean
 type SetTicketListType = (tickets: {data: ITicket[], totalPages: number}) => void
 type SetTicketListPageType = (page: number) => void
@@ -29,7 +31,7 @@ type ContextType = {
   auth: IAuthState
   ticketList: ITicketListState
   ticket: ITicketState
-  newTicket: INewTicketState
+  newTicket: IFormState
   hasRole: HasRoleType
   login: LoginType
   logout: LogoutType
@@ -68,13 +70,18 @@ const useStore = () => {
   return useContext(StoreContext)
 }
 
+const request = axios.create({
+  baseURL: 'http://localhost/api',
+  withCredentials: true,
+})
+
 const StoreProvider: React.FC = ( { children } ) => {
   const {gotoTicket} = useFunctions()
   const [state, dispatch] = useReducer(reducer, initialState)
   const {params: ticketListParams} = state.ticketList
-  const {loggedIn, userRoles} = state.auth
+  const {loggedIn, userRoles} = state.auth  
 
-  const login: LoginType = (userRoles, userName) => {
+  const authLogin: AuthLoginType = (userRoles, userName) => {
     dispatch({
       type: AuthActionTypes.LOGIN,
       userRoles,
@@ -83,13 +90,21 @@ const StoreProvider: React.FC = ( { children } ) => {
     sessionStorage.setItem('loggedIn', 'true')
     sessionStorage.setItem('userRoles', JSON.stringify(userRoles))
     sessionStorage.setItem('userName', userName)
-
   }
-  const logout: LogoutType = () => {
+
+  const authLogout: AuthLogoutType = () => {
     dispatch({type: CONSTANTS.INIT})
     sessionStorage.removeItem('loggedIn')
     sessionStorage.removeItem('userRoles')
     sessionStorage.removeItem('userName')
+  }
+
+  const setLoginLoading: DispatchLoadingType = loading => {
+    dispatch({type: AuthActionTypes.SET_LOGIN_LOADING, loading})
+  }
+
+  const setLoginErrors: DispatchErrorsType = errors => {
+    dispatch({type: AuthActionTypes.SET_LOGIN_ERRORS, errors})
   }
 
   const hasRole: HasRoleType = (userRole) => userRoles.includes(userRole)
@@ -260,6 +275,38 @@ const StoreProvider: React.FC = ( { children } ) => {
         setAddTicketLoading(false)
       })
   }, [gotoTicket, setAddTicketErrors, setAddTicketLoading, addTicketListItem])
+
+  const login: LoginType = params => {
+    setLoginLoading(true)
+    request.get('/sanctum/csrf-cookie')
+      .then(response => {
+        request.post('/login', params)
+          .then(response => {
+            if(response.status === 200 && response.data !== undefined) {
+              const {userRoles, userName} = response.data
+              authLogin(userRoles, userName)
+            }
+          })
+          .catch(err => {
+            if(err.response !== undefined && err.response.status === 422 && err.response.data.errors !== undefined){
+              setLoginErrors(err.response.data.errors)
+            }
+          })
+          .then(() => {
+            setLoginLoading(false)
+          })
+      })
+      .catch(() => setLoginLoading(false) )
+  }
+
+  const logout: LogoutType = () => {
+    request.post('/logout')
+      .then(response => {
+        if(response.status === 204){
+          authLogout()
+        }
+      })
+  }
 
   const functions = {
     login,
