@@ -1,9 +1,10 @@
 import React, {createContext, useContext, useReducer, useCallback, useEffect} from 'react';
 import {reducer, initialState} from '../reducers/index'
-import CONSTANTS, {AuthActionTypes, TicketListActionTypes, TicketActionTypes} from '../constants'
-import {IAuthState, ITicket, ITicketListState, ITicketState, ITicketWithResponse, ITicketWithResponses} from '../interfaces'
+import CONSTANTS, {AuthActionTypes, TicketListActionTypes, TicketActionTypes, NewTicketActionTypes} from '../constants'
+import {IAuthState, INewTicketState, ITicket, ITicketListState, ITicketState, ITicketWithResponse, ITicketWithResponses} from '../interfaces'
 import {request} from '../services/api'
 import {FormErrorsType} from '../types'
+import useFunctions from '../functions'
 
 type DispatchLoadingType = (loading: boolean) => void
 type DispatchErrorsType = (errors: FormErrorsType) => void
@@ -23,10 +24,12 @@ type SetTicketPageDataType = (ticket: ITicketWithResponses) => void
 type SetTicketPageType = (ticketId: number, page: number) => void
 type SetTicketDataType = (data: ITicket) => void
 type ChangeStatusType = (ticketId: number, status: number) => void
+type AddTicketType = (subject: string, content: string) => void
 type ContextType = {
   auth: IAuthState
   ticketList: ITicketListState
   ticket: ITicketState
+  newTicket: INewTicketState
   hasRole: HasRoleType
   login: LoginType
   logout: LogoutType
@@ -38,6 +41,8 @@ type ContextType = {
   addResponse: AddResponseType
   setTicketPage: SetTicketPageType
   changeStatus: ChangeStatusType
+  addTicket: AddTicketType
+  setAddTicketErrors: DispatchErrorsType
 }
 
 const initialStoreValues = {
@@ -52,7 +57,9 @@ const initialStoreValues = {
   takeTicket: () => {},
   addResponse: () => {},
   setTicketPage: () => {},
-  changeStatus: () => {}
+  changeStatus: () => {},
+  addTicket: () => {},
+  setAddTicketErrors: () => {},
 }
 
 const StoreContext = createContext<ContextType>(initialStoreValues)
@@ -62,6 +69,7 @@ const useStore = () => {
 }
 
 const StoreProvider: React.FC = ( { children } ) => {
+  const {gotoTicket} = useFunctions()
   const [state, dispatch] = useReducer(reducer, initialState)
   const {params: ticketListParams} = state.ticketList
   const {loggedIn, userRoles} = state.auth
@@ -114,12 +122,20 @@ const StoreProvider: React.FC = ( { children } ) => {
     dispatch({type: TicketListActionTypes.SET_ITEM, ticket})
   }, [])
 
+  const addTicketListItem: SetTicketListItemType = useCallback((ticket) => {
+    dispatch({type: TicketListActionTypes.ADD_ITEM, ticket})
+  }, [])
+
   const setAddResponseLoading: DispatchLoadingType = useCallback(loading => {
     dispatch({type: TicketActionTypes.SET_ADD_RESPONSE_LOADING, loading})
   }, [])
 
   const setAddResponseErrors: DispatchErrorsType = useCallback((errors) => {
     dispatch({type: TicketActionTypes.SET_ADD_RESPONSE_ERRORS, errors})
+  }, [])
+
+  const setAddTicketErrors: DispatchErrorsType = useCallback((errors) => {
+    dispatch({type: NewTicketActionTypes.SET_ERRORS, errors})
   }, [])
 
   const addTicketResponseItem: AddTicketResponseItemType = useCallback((data) => {
@@ -133,6 +149,10 @@ const StoreProvider: React.FC = ( { children } ) => {
 
   const setChangeStatusLoading: DispatchLoadingType = useCallback(loading => {
     dispatch({type: TicketActionTypes.SET_CHANGE_STATUS_LOADING, loading})
+  }, [])
+
+  const setAddTicketLoading: DispatchLoadingType = useCallback(loading => {
+    dispatch({type: NewTicketActionTypes.SET_LOADING, loading})
   }, [])
 
   const setTicketPageData: SetTicketPageDataType = useCallback(ticket => {
@@ -221,6 +241,26 @@ const StoreProvider: React.FC = ( { children } ) => {
       .catch(err => {})
       .then(() => setChangeStatusLoading(false))
   }, [setChangeStatusLoading, setTicketData])
+
+  const addTicket: AddTicketType = useCallback((subject, content) => {
+    setAddTicketLoading(true)
+    request.post('/api/ticket', {subject, content})
+      .then(response => {
+        if(response.data !== undefined) {
+          addTicketListItem(response.data)
+          gotoTicket(response.data.id)
+        }
+        setAddTicketErrors(null)
+      })
+      .catch(err => {
+        if(err.response.data.errors !== undefined){
+          setAddTicketErrors(err.response.data.errors)
+        }
+      }).then(() => {
+        setAddTicketLoading(false)
+      })
+  }, [gotoTicket, setAddTicketErrors, setAddTicketLoading, addTicketListItem])
+
   const functions = {
     login,
     logout,
@@ -232,6 +272,8 @@ const StoreProvider: React.FC = ( { children } ) => {
     setTicketPage,
     addResponse,
     changeStatus,
+    addTicket,
+    setAddTicketErrors,
   }
 
   return <StoreContext.Provider value={{...state, ...functions }}>{children}</StoreContext.Provider>

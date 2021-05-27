@@ -1,7 +1,6 @@
 import {useState, useCallback} from 'react'
 import axios from 'axios'
 import {useStore} from '../services/store'
-import {useHistory} from 'react-router-dom'
 import {FormErrorsType} from '../types'
 
 type LoginProps = {
@@ -15,7 +14,6 @@ export const request = axios.create({
 })
 
 const useAPI = () => {
-  const history = useHistory()
   const {login: storeLogin, logout: storeLogout} = useStore()
   const [loading, setLoading] = useState<boolean>(false)
   const [data, setData] = useState<any>(null)
@@ -54,25 +52,7 @@ const useAPI = () => {
       })
   }, [storeLogout])
 
-  const gotoTicket = useCallback( (id) => history.push(`/ticket/${id}`), [history])
-
-  const newTicket = useCallback(params => {
-    setLoading(true)
-    request.post('/api/ticket', params)
-      .then(response => {
-        if(response.data.id !== undefined) {
-          gotoTicket(response.data.id)
-        }
-      })
-      .catch(err => {
-        if(err.response.data.errors !== undefined){
-          setErrors(err.response.data.errors)    
-        }
-        setLoading(false)
-      })
-  }, [gotoTicket])
-
-  return {loading, errors, login, logout, newTicket, gotoTicket, getData, setData}
+  return {loading, errors, login, logout, getData, setData}
 }
 
 export default useAPI

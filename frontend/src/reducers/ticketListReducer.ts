@@ -1,9 +1,11 @@
 import {ITicketListState, ITicket, ITicketItemState} from '../interfaces'
 import {TicketListActionTypes} from '../constants'
+import {loadingReducer} from './index'
 
 export type TicketListAction =
 | {type: TicketListActionTypes.SET, data: ITicket[], totalPages: number}
 | {type: TicketListActionTypes.SET_ITEM, ticket: ITicket}
+| {type: TicketListActionTypes.ADD_ITEM, ticket: ITicket}
 | {type: TicketListActionTypes.SET_PAGE, page: number}
 | {type: TicketListActionTypes.SET_LIMIT, limit: number}
 | {type: TicketListActionTypes.SET_STATUS, status: number | null}
@@ -28,7 +30,7 @@ const ticket = (state: ITicketItemState, action: TicketListAction): ITicket => {
     case TicketListActionTypes.SET_ITEM:
       return state.id === action.ticket.id ? action.ticket : state
     case TicketListActionTypes.SET_ITEM_LOADING:
-      return state.id === action.id ? {...state, loading: action.loading} : state
+      return state.id === action.id ? loadingReducer(state, action.loading) : state
     default:
       return state
   }
@@ -39,7 +41,9 @@ const ticketListReducer = (state: ITicketListState, action: TicketListAction): I
   switch(action.type) {
     case TicketListActionTypes.SET:
       return {...state, data: action.data, totalPages: action.totalPages}
-    case TicketListActionTypes.SET_ITEM:
+    case TicketListActionTypes.ADD_ITEM:
+      return {...state, data: [action.ticket, ...state.data]}
+      case TicketListActionTypes.SET_ITEM:
       return {...state, data: state.data.map((t: ITicketItemState) => ticket(t, action))}
     case TicketListActionTypes.SET_ITEM_LOADING:
       return {...state, data: state.data.map((t: ITicketItemState) => ticket(t, action))}
@@ -51,7 +55,7 @@ const ticketListReducer = (state: ITicketListState, action: TicketListAction): I
     case TicketListActionTypes.SET_LIMIT:
       return {...state, params: {...state.params, limit: action.limit, page: 1}}
     case TicketListActionTypes.SET_LOADING:
-      return {...state, loading: action.loading}
+      return loadingReducer(state, action.loading)
     default:
       return state
   }

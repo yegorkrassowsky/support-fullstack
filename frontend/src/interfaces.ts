@@ -1,4 +1,4 @@
-import { FormErrorsType } from "./types";
+import { FormErrorsType } from "./types"
 
 export interface ILoading {
   loading: boolean
@@ -82,3 +82,5 @@ export interface ITicketState extends ITicketWithResponses, ILoading, IResponses
   addResponse: IAddResponseState
   changeStatusLoading: boolean
 }
+
+export interface INewTicketState extends ILoading, IFormErrors {}

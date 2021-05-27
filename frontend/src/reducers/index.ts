@@ -1,12 +1,15 @@
 import authReducer, {initialAuthState, authDefaults} from './authReducer'
 import ticketListReducer, {initialTicketListState} from './ticketListReducer'
 import ticketReducer, {initialTicketState} from './ticketReducer'
+import newTicketReducer, {initialNewTicketState} from './newTicketReducer'
 import CONSTANTS from '../constants'
+import { FormErrorsType } from "../types";
 
 const initialState = {
   auth: initialAuthState,
   ticketList: initialTicketListState,
   ticket: initialTicketState,
+  newTicket: initialNewTicketState,
 }
 
 function combineReducers(reducers: {[key: string]: Function}) {  
@@ -26,6 +29,10 @@ const reducer = combineReducers({
   auth: authReducer,
   ticketList: ticketListReducer,
   ticket: ticketReducer,
+  newTicket: newTicketReducer,
 })
 
-export { initialState, reducer }
+const loadingReducer = (state: any, loading: boolean) => ({...state, loading})
+const errorsReducer = (state: any, errors: FormErrorsType) => ({...state, errors})
+
+export { initialState, reducer, loadingReducer, errorsReducer }

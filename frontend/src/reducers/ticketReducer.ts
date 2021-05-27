@@ -1,16 +1,16 @@
 import {TicketActionTypes} from '../constants'
-import {ITicketState, ITicket, IResponse, IAddResponseState, ITicketWithResponses, ITicketWithResponse} from '../interfaces'
-import {FormErrorsType} from '../types'
+import {ITicketState, ITicket, IFormErrors, IAddResponseState, ITicketWithResponses, ITicketWithResponse, ILoading, IResponses} from '../interfaces'
+import {loadingReducer, errorsReducer} from './index'
 
 export type TicketAction =
 | {type: TicketActionTypes.SET, ticket: ITicketWithResponses}
 | {type: TicketActionTypes.SET_TICKET, data: ITicket}
-| {type: TicketActionTypes.SET_LOADING, loading: boolean}
-| {type: TicketActionTypes.SET_RESPONSES, responses: IResponse[]}
+| {type: TicketActionTypes.SET_LOADING} & ILoading
+| {type: TicketActionTypes.SET_RESPONSES} & IResponses
 | {type: TicketActionTypes.ADD_RESPONSE, data: ITicketWithResponse}
-| {type: TicketActionTypes.SET_ADD_RESPONSE_LOADING, loading: boolean}
-| {type: TicketActionTypes.SET_ADD_RESPONSE_ERRORS, errors: FormErrorsType}
-| {type: TicketActionTypes.SET_CHANGE_STATUS_LOADING, loading: boolean}
+| {type: TicketActionTypes.SET_ADD_RESPONSE_LOADING} & ILoading
+| {type: TicketActionTypes.SET_ADD_RESPONSE_ERRORS} & IFormErrors
+| {type: TicketActionTypes.SET_CHANGE_STATUS_LOADING} & ILoading
 
 const initialAddResponseState = {
   loading: false,
@@ -32,7 +32,7 @@ const ticketReducer = (state: ITicketState, action: TicketAction): ITicketState 
     case TicketActionTypes.SET_TICKET:
       return {...state, data: action.data}
     case TicketActionTypes.SET_LOADING:
-      return {...state, loading: action.loading}
+      return loadingReducer(state, action.loading)
     case TicketActionTypes.SET_CHANGE_STATUS_LOADING:
       return {...state, changeStatusLoading: action.loading}
     case TicketActionTypes.SET_RESPONSES:
@@ -51,9 +51,9 @@ const ticketReducer = (state: ITicketState, action: TicketAction): ITicketState 
 const addResponse = (state: IAddResponseState, action: TicketAction): IAddResponseState => {
   switch(action.type) {
     case TicketActionTypes.SET_ADD_RESPONSE_LOADING:
-      return {...state, loading: action.loading}
+      return loadingReducer(state, action.loading)
     case TicketActionTypes.SET_ADD_RESPONSE_ERRORS:
-      return {...state, errors: action.errors}
+      return errorsReducer(state, action.errors)
     default:
       return state
   }

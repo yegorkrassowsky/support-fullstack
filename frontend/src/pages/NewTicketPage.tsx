@@ -1,11 +1,14 @@
 import React, {useState, useRef, useEffect} from 'react'
+import {useStore} from '../services/store'
 import InputErrors from '../components/InputErrors'
-import useAPI from '../services/api'
 import Loader from '../components/Loader'
 import Editor from '../components/Editor'
 
 const NewTicketPage: React.FC = () => {
-  const {newTicket, loading, errors} = useAPI()
+  const {addTicket, setAddTicketErrors, newTicket: {errors, loading}} = useStore()
+  useEffect(()=>{
+    setAddTicketErrors(null)
+  }, [setAddTicketErrors])
   const validated = !!errors
   const subjectErrors = errors?.subject || null
   const contentErrors = errors?.content || null
@@ -40,10 +43,7 @@ const NewTicketPage: React.FC = () => {
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current !== undefined) {
-      newTicket({
-        subject,
-        content: editorRef.current.getContent()
-      })
+      addTicket(subject, editorRef.current.getContent())
     }
   }
 
