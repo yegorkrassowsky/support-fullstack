@@ -20,15 +20,16 @@ class TicketController extends Controller
         $user = $request->user();
         $limit = $request->has('limit') ? $request->get('limit') : 10;
         $status = $request->filled('status') ? $request->get('status') : false;
-        $tickets = Ticket::when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
-                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
-            } )
-            ->when($status !== false, function($q, $c) use ($status) {
+        $tickets = Ticket::when($status !== false, function($q, $c) use ($status) {
                 return $q->where('status', $status);
             })
+            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
+                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
+            } )
             ->when($user->hasRole('client'), function($q, $c) use ($user) {
                 return $q->where('author_id', $user->id);
             })
+            ->orderBy('updated_at', 'desc')
             ->paginate($limit);
         return $tickets;
     }
@@ -50,6 +51,7 @@ class TicketController extends Controller
             ]);
             $ticket = new Ticket;
             $ticket->author_id = $user->id;
+            $ticket->status = 1;
             $ticket->fill([
                 'subject' => strip_tags($validated['subject']),
                 'content' => $validated['content'],
