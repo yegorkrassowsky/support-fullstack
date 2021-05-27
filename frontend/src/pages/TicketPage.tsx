@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useMemo} from 'react'
 import {useParams, useLocation, useHistory} from 'react-router-dom'
 import Loader from '../components/Loader'
-import {ticketStatuses} from '../constants'
+import CONSTANTS, {ticketStatuses} from '../constants'
 import TicketInfo from '../components/TicketInfo'
 import Reply from '../components/Reply'
 import ResponseList from '../components/ResponseList'
@@ -39,15 +39,15 @@ const TicketPage: React.FC = () => {
   const ticketId = +ticketIdParam
   const {setTicketPage, ticket} = useStore()
   const [editorReady, setEditorReady] = useState<boolean>(false)
-  const {loading: ticketLoading, data: ticketData, responses, totalPages} = ticket
-  const agent = ticketData?.agent || null
-  const status = ticketData?.status === undefined ? 1 : ticketData?.status
+  const {loading, data, responses, totalPages} = ticket
+  const agent = data?.agent || ''
+  const status = data?.status ? data.status : 0
   const [pageReady, setPageReady] = useState<boolean>(false)
   useEffect(()=>{
-    if(! pageReady && ! ticketLoading && editorReady) {
+    if(! pageReady && ! loading && editorReady) {
       setPageReady(true)
     }
-  }, [ticketLoading, editorReady, pageReady])
+  }, [loading, editorReady, pageReady])
   const location = useLocation()
   const urlParams = useMemo(() => {
     return new URLSearchParams(location.search);
@@ -76,7 +76,7 @@ const TicketPage: React.FC = () => {
   
   const statusText = ticketStatuses[status]
   const statusClasses = ['bg-danger', 'bg-warning', 'bg-success']
-  const cardClass = ['card', ...[statusClasses[status]]].join(' ')
+  const cardClass = ['card', statusClasses[status]].join(' ')
 
   let ticketContainerClass = ['ticket-container']
 
@@ -97,7 +97,7 @@ const TicketPage: React.FC = () => {
               <div className={cardClass}>
                 <div className="card-body">
                   <span className="ticket-status">{statusText}</span>
-                  <div className="ticket-agent">{agent ? agent : 'Not assigned'}</div>
+                  <div className="ticket-agent">{agent ? agent : CONSTANTS.NOT_ASSIGNED_TICKET_STATUS}</div>
                 </div>
               </div>
             </div>
@@ -112,7 +112,7 @@ const TicketPage: React.FC = () => {
                 totalPages,
                 pageNeighbours: 1,
               }}
-              loading={ticketLoading}
+              loading={loading}
             />}
             <Reply ticketId={ticketId} setEditorReady={() => setEditorReady(true)} />
           </div>
