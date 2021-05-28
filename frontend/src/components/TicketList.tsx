@@ -16,10 +16,10 @@ const TicketList: React.FC<TicketListProps> = ({tickets}) => {
     <tr>
       <th scope="col">#</th>
       <th scope="col">Subject</th>
-      {hasRole(userRoles.agent) && (<th scope="col">Client</th>)}
-      <th scope="col">Agent</th>
-      <th scope="col">Status</th>
-      <th scope="col">Replied at</th>
+      {hasRole(userRoles.agent) && (<th scope="col" className="client">Client</th>)}
+      <th scope="col" className="agent">Agent</th>
+      <th scope="col" className="status">Status</th>
+      <th scope="col" className="replied-date">Replied at</th>
     </tr>
   </thead>
   <tbody>

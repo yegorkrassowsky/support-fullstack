@@ -12,14 +12,26 @@
       padding: 0 30px;
       margin-bottom: 30px;
       .ticket-header {
-        display: flex;
-        justify-content: space-between;
-        align-content: center;
         border-bottom: 1px solid #f0f0f0;
         padding: 20px 0;
         .ticket-subject {
           font-size: 1.5rem;
           font-weight: 500;
+          margin-top: 1rem;
+        }
+        .controls {
+          margin-top: 1rem;
+          .btn {
+            width: 82px;
+          }
+        }
+        @media (min-width: 768px) {
+          display: flex;
+          justify-content: space-between;
+          align-content: center;
+          .controls {
+            margin-top: 0;
+          }
         }
       }
       .ticket-body {
@@ -114,9 +126,11 @@
                 padding-bottom: 20px;
                 border-bottom: 1px solid #f0f0f0;
                 margin-bottom: 20px;
-                display: flex;
-                justify-content:  space-between;
-                align-items: center;
+                @media (min-width: 576px) {
+                  display: flex;
+                  justify-content:  space-between;
+                  align-items: center;
+                }
                 .response-author {
                   display: flex;
                   align-items: center;

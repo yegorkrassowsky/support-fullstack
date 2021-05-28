@@ -36,37 +36,36 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <form onSubmit={submitHandler}>
-      <fieldset disabled={loading}>
-        <div className="mb-3">
-          <label htmlFor="loginInputEmail" className="form-label">Email address</label>
-          <input value={email} onChange={emailHandler} type="email" className={emailClass.join(' ')} id="loginInputEmail" aria-describedby="emailHelp" />
-          {emailErrors && <InputErrors errors={emailErrors} />}
-          <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="loginInputPassword" className="form-label">Password</label>
-          <input value={password} onChange={passwordHandler} type="password" className={passwordClass.join(' ')} id="loginInputPassword" />
-          {passwordErrors && <InputErrors errors={passwordErrors} />}
-        </div>
-        <div className="mb-3">
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Login'}
-          </button>
-        </div>
-        <div className="mb-3 text-center">
-          Or login as
-        </div>
-        <div className="mb-3">
-          <button onClick={guestClientHandler} className="btn btn-warning" type="button" disabled={loading}>Guest client</button>
-        </div>
-        <div className="mb-3">
-          <button onClick={guestAgentHandler} className="btn btn-success" type="button" disabled={loading}>Guest agent</button>
-        </div>
-
-      </fieldset>
-      
-    </form>
+    <div className="login-page">
+      <div className="main-header login-header">
+        <h1>Login</h1>
+      </div>
+      <div className="login-container">
+        <form onSubmit={submitHandler}>
+          <fieldset disabled={loading}>
+            <div className="mb-3">
+              <label htmlFor="loginInputEmail" className="form-label">Email address</label>
+              <input value={email} onChange={emailHandler} type="email" className={emailClass.join(' ')} id="loginInputEmail" aria-describedby="emailHelp" />
+              {emailErrors && <InputErrors errors={emailErrors} />}
+              <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div className="mb-3">
+              <label htmlFor="loginInputPassword" className="form-label">Password</label>
+              <input value={password} onChange={passwordHandler} type="password" className={passwordClass.join(' ')} id="loginInputPassword" />
+              {passwordErrors && <InputErrors errors={passwordErrors} />}
+            </div>
+            <div className="d-grid gap-3">
+              <button className="btn btn-primary" type="submit" disabled={loading}>
+                {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Login'}
+              </button>
+              <div className="guest-login-text">or login as</div>
+              <button onClick={guestClientHandler} className="btn btn-warning" type="button" disabled={loading}>Guest client</button>
+              <button onClick={guestAgentHandler} className="btn btn-success" type="button" disabled={loading}>Guest agent</button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
   )
 }
 

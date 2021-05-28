@@ -21,11 +21,11 @@ const Ticket: React.FC<ITicketItemState> = ({id, subject, author, agent, status,
   return (
     <tr onClick={openTicketPage}>
       <th scope="row">{id}</th>
-      <td>{subject}</td>
-      {hasRole(userRoles.agent) && (<td>{author}</td>)}
-      <td>{ticketAgent}</td>
-      <td><span className={badgeClass}>{statusText}</span></td>
-      <td>{replied}</td>
+      <td className="subject">{subject}</td>
+      {hasRole(userRoles.agent) && <td className="client">{author}</td>}
+      <td className="agent">{ticketAgent}</td>
+      <td className="status"><span className={badgeClass}>{statusText}</span></td>
+      <td className="replied-date">{replied}</td>
     </tr>
   )
 }

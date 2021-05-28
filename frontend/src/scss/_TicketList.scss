@@ -2,9 +2,23 @@
   padding-bottom: 30px;
   .ticket-list-header {
     .status-filter {
+      @media (min-width: 400px) {
+        display: flex;
+        justify-content: space-between;
+      }
+      @media (max-width: 767px) {
+        margin: 1.5rem 0;
+      }
       .muted {
         opacity: 0.5;
       }
+      .btn:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+    }
+    .page-limit {
+      display: flex;
+      justify-content: space-between;
     }
   }
   .ticket-list-container {
@@ -24,8 +38,39 @@
       z-index: 5;
     }
     .table-tickets {
+      th, td {
+        text-align: center;
+      }
       td {
         cursor: pointer;
+        vertical-align: middle;
+      }
+      .subject {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .replied-date {
+        white-space: nowrap;
+        @media (max-width: 991px) {
+          display: none;
+        }
+      }
+      .client {
+        @media (max-width: 767px) {
+          display: none;
+        }
+      }
+      .status {
+        .btn {
+          width: 93px;
+        }
+      }
+      .status {
+        .badge {
+          width: 65px;
+        }
       }
     }
     .tickets-not-found {

@@ -37,7 +37,10 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 const TicketPage: React.FC = () => {
   const {id: ticketIdParam} = useParams<{id: string}>()
   const ticketId = +ticketIdParam
-  const {setTicketPage, ticket} = useStore()
+  const {setTicketPage, setAddResponseErrors, ticket} = useStore()
+  useEffect(()=>{
+    setAddResponseErrors(null)
+  }, [setAddResponseErrors])
   const [editorReady, setEditorReady] = useState<boolean>(false)
   const {loading, data, responses, totalPages} = ticket
   const agent = data?.agent || ''

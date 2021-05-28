@@ -45,6 +45,7 @@ type ContextType = {
   changeStatus: ChangeStatusType
   addTicket: AddTicketType
   setAddTicketErrors: DispatchErrorsType
+  setAddResponseErrors: DispatchErrorsType
 }
 
 const initialStoreValues = {
@@ -62,6 +63,7 @@ const initialStoreValues = {
   changeStatus: () => {},
   addTicket: () => {},
   setAddTicketErrors: () => {},
+  setAddResponseErrors: () => {},
 }
 
 const StoreContext = createContext<ContextType>(initialStoreValues)
@@ -321,6 +323,7 @@ const StoreProvider: React.FC = ( { children } ) => {
     changeStatus,
     addTicket,
     setAddTicketErrors,
+    setAddResponseErrors,
   }
 
   return <StoreContext.Provider value={{...state, ...functions }}>{children}</StoreContext.Provider>

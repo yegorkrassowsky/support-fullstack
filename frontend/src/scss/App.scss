@@ -1,3 +1,4 @@
+@import 'Login';
 @import 'TicketList';
 @import 'NewTicket';
 @import 'Ticket';
@@ -18,9 +19,21 @@ body {
 
 .main-navbar {
   margin-bottom: 2rem;
-  .navbar-collapse {
-    display: flex;
+  .navbar-nav {
+    flex-direction: row;
     justify-content: space-between;
+    width: 100%;
+    .nav-item {
+      display: flex;
+      .logout-btn {
+        padding: 0;
+        margin-left: 10px;
+        i {
+          position: relative;
+          top: -1px;
+        }
+      }  
+    }
   }
 }
 

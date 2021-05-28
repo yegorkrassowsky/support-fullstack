@@ -1,0 +1,27 @@
+.login-page {
+  max-width: 440px;
+  margin: 40px auto;
+  padding: 40px;
+  background-color: #fff;
+  .login-header {
+    text-align: center;
+    margin-top: 0;
+  }
+  .login-container {
+    .guest-login-text {
+      display: flex;
+      align-items: center;
+      &:before, &:after {
+        content: '';
+        flex: 1 1 auto;
+        border-top: 1px solid #f0f0f0;
+      }
+      &:before {
+        margin-right: 10px;
+      }
+      &:after {
+        margin-left: 10px;
+      }
+    }
+  }
+}

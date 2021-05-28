@@ -4,31 +4,21 @@ import {useStore} from '../services/store'
 
 const Navbar: React.FC = () => {
   const {auth, logout} = useStore()
+  if(!auth.loggedIn) {
+    return <></>
+  }
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary main-navbar">
+    <nav className="navbar navbar-dark bg-primary main-navbar">
       <div className="container-fluid">
-        <button className="navbar-toggler" type="button">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse">
-          {auth.loggedIn ? (
-            <>
-              <ul className="navbar-nav">
-                <li className="nav-item">
-                  <NavLink className="nav-link" to='/'>Dashboard</NavLink>
-                </li>
-              </ul>
-              <ul className="navbar-nav">
-                <span className="navbar-text">{auth.userName}</span>
-                <li className="nav-item"><button className="btn btn-link nav-link" onClick={logout}>Logout</button></li>
-              </ul>
-            </>
-          ) : (
-            <ul className="navbar-nav">
-              <li className="nav-item"><NavLink className="nav-link" to='/login'>Login</NavLink></li>
-            </ul>
-          ) }
-        </div>
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <NavLink className="nav-link" to='/'>Dashboard</NavLink>
+          </li>
+          <li className="nav-item">
+            <span className="navbar-text">Hi, {auth.userName}</span>
+            <button className="btn btn-link nav-link logout-btn" title="Logout" onClick={logout}><i className="fas fa-door-open"></i></button>
+          </li>
+        </ul>
       </div>
     </nav>
 

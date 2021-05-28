@@ -19,15 +19,19 @@ const TicketListPage: React.FC = () => {
   return (
     <div className="ticket-list-page">
       <div className="ticket-list-header main-header">
-        <h1>Tickets</h1>
-        {hasRole(userRoles.client) && (
-          <div className="d-flex justify-content-end">
-            <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
-          </div>
-      )}
-        <div className="d-flex justify-content-between my-4">
-          <StatusFilter />
+        {hasRole(userRoles.client) ?
+          <>
+            <h1>Your tickets</h1>
+            <div className="d-flex justify-content-end">
+              <Link className="btn btn-primary" to='/new-ticket'>New ticket</Link>
+            </div>
+          </>
+          :
+          <h1>Tickets</h1>
+        }
+        <div className="d-md-flex justify-content-between my-4">
           <PageLimit />
+          <StatusFilter />
         </div>
       </div>
       <div className={listContainerClass.join(' ')}>
