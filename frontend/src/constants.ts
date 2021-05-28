@@ -49,3 +49,13 @@ export enum NewTicketActionTypes {
   SET_LOADING = 'NEW_TICKET_SET_LOADING',
   SET_ERRORS = 'NEW_TICKET_SET_ERRORS'
 }
+
+export enum GuestClientCredentials {
+  EMAIL = 'qweg@mail.ru',
+  PASS = '123',
+}
+
+export enum GuestAgentCredentials {
+  EMAIL = 'ykdevreact@gmail.com',
+  PASS = '123',
+}

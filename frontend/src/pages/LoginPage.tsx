@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {useStore} from '../services/store'
 import InputErrors from '../components/InputErrors'
+import {GuestClientCredentials, GuestAgentCredentials} from '../constants'
 
 const LoginPage: React.FC = () => {
   const {auth: {login: {loading, errors}}, login} = useStore()
@@ -18,6 +19,12 @@ const LoginPage: React.FC = () => {
   }
   const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value)
+  }
+  const guestClientHandler = (e: React.MouseEvent) => {
+    login({email: GuestClientCredentials.EMAIL, password: GuestClientCredentials.PASS})
+  }
+  const guestAgentHandler = (e: React.MouseEvent) => {
+    login({email: GuestAgentCredentials.EMAIL, password: GuestAgentCredentials.PASS})
   }
 
   let emailClass = ['form-control']
@@ -42,12 +49,21 @@ const LoginPage: React.FC = () => {
           <input value={password} onChange={passwordHandler} type="password" className={passwordClass.join(' ')} id="loginInputPassword" />
           {passwordErrors && <InputErrors errors={passwordErrors} />}
         </div>
-        {loading ? (
-            <button className="btn btn-primary" type="button" disabled>
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...
-            </button>) : (
-            <button type="submit" className="btn btn-primary">Login</button>
-        )}
+        <div className="mb-3">
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Login'}
+          </button>
+        </div>
+        <div className="mb-3 text-center">
+          Or login as
+        </div>
+        <div className="mb-3">
+          <button onClick={guestClientHandler} className="btn btn-warning" type="button" disabled={loading}>Guest client</button>
+        </div>
+        <div className="mb-3">
+          <button onClick={guestAgentHandler} className="btn btn-success" type="button" disabled={loading}>Guest agent</button>
+        </div>
+
       </fieldset>
       
     </form>
