@@ -23,9 +23,11 @@ class TicketController extends Controller
         $tickets = Ticket::when($status !== false, function($q, $c) use ($status) {
                 return $q->where('status', $status);
             })
-            ->when( $user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
-                return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
-            } )
+            ->when($user->hasRole('agent') && ! $user->hasRole('admin'), function($q, $c) use ($user) {
+                return $q->where(function ($q) use ($user) {
+                    return $q->where('agent_id', $user->id)->orWhereNull('agent_id');
+                });
+            })
             ->when($user->hasRole('client'), function($q, $c) use ($user) {
                 return $q->where('author_id', $user->id);
             })
