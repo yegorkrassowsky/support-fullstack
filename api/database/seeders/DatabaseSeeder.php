@@ -79,9 +79,9 @@ class DatabaseSeeder extends Seeder
         $faker = \Faker\Factory::create();
         for ($i = 0; $i < 30; $i++) {
             $created_at = $faker->dateTimeThisYear($max = 'now', $timezone = null);
-            $author_id = $i ? $faker->randomElement($client_ids) : $client->id; // First ticket by client explicitly
+            $author_id = $i > 4 ? $faker->randomElement($client_ids) : $client->id; // First 5 tickets by client explicitly
             $agent_id = $faker->randomElement([null, $agent->id, $admin->id]);
-            $status = $faker->randomElement([0, 1, 2]);
+            $status = $agent_id ? $faker->randomElement([0, 1, 2]) : $faker->randomElement([0, 1]);
             $ticket = Ticket::create([
                 'subject' => $faker->sentence,
                 'content' => $faker->text,
@@ -102,6 +102,8 @@ class DatabaseSeeder extends Seeder
                         'ticket_id' => $ticket->id,
                         'content' => $faker->text,
                         'author_id' => $response_author_id,
+                        'created_at' => $created_at,
+                        'updated_at' => $created_at,
                     ]);
                 }
             }
