@@ -1,11 +1,14 @@
 import React, {useEffect, useState, useMemo} from 'react'
 import {useParams, useLocation, useHistory} from 'react-router-dom'
+import {connect} from 'react-redux'
 import Loader from '../components/Loader'
 import CONSTANTS, {ticketStatuses} from '../constants'
 import TicketInfo from '../components/TicketInfo'
 import Reply from '../components/Reply'
 import ResponseList from '../components/ResponseList'
-import { useStore } from '../services/store'
+import {addResponse, changeStatus, setAddResponseErrors, setTicketPage} from '../actions/ticket'
+import {IState, ITicketState} from '../interfaces'
+import {ThunkDispatchType, SetErrorsType, FormErrorsType, SetTicketPageType, ChangeStatusType, AddResponseType} from '../types'
 
 const supportedParams = ['page']
 
@@ -34,13 +37,20 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
   return obj as DataQueryProps;
 }
 
-const TicketPage: React.FC = () => {
+type TicketPageProps = {
+  ticket: ITicketState
+  setTicketPage: SetTicketPageType
+  addResponse: AddResponseType
+  addResponseErrors: SetErrorsType
+  changeStatus: ChangeStatusType
+}
+
+const TicketPage: React.FC<TicketPageProps> = ({ticket, setTicketPage, addResponse, addResponseErrors, changeStatus}) => {
   const {id: ticketIdParam} = useParams<{id: string}>()
   const ticketId = +ticketIdParam
-  const {setTicketPage, setAddResponseErrors, ticket} = useStore()
   useEffect(()=>{
-    setAddResponseErrors(null)
-  }, [setAddResponseErrors])
+    addResponseErrors(null)
+  }, [addResponseErrors])
   const [editorReady, setEditorReady] = useState<boolean>(false)
   const {loading, data, responses, totalPages} = ticket
   const agent = data?.agent || ''
@@ -106,7 +116,7 @@ const TicketPage: React.FC = () => {
             </div>
           </div>
           <div className="col-lg-9 order-lg-1">
-            <TicketInfo />
+            {data && <TicketInfo ticket={data} loading={ticket.changeStatusLoading} changeStatus={changeStatus} />}
             {responses.length > 0 && <ResponseList
               data={responses}
               paginationProps={{
@@ -117,7 +127,12 @@ const TicketPage: React.FC = () => {
               }}
               loading={loading}
             />}
-            <Reply ticketId={ticketId} setEditorReady={() => setEditorReady(true)} />
+            <Reply
+              ticketId={ticketId}
+              formData={ticket.addResponse}
+              addResponse={addResponse}
+              setEditorReady={() => setEditorReady(true)}
+            />
           </div>
         </div>
       </div>
@@ -125,4 +140,13 @@ const TicketPage: React.FC = () => {
   )
 }
 
-export default TicketPage
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  setTicketPage: (ticketId: number, page: number) => dispatch(setTicketPage(ticketId, page)),
+  changeStatus: (ticketId: number, status: number) => dispatch(changeStatus(ticketId, status)),
+  addResponse: (ticketId: number, content: string, callback: Function) => dispatch(addResponse(ticketId, content, callback)),
+  addResponseErrors: (errors: FormErrorsType) => dispatch(setAddResponseErrors(errors)),
+})
+
+export default connect((state: IState) => ({
+  ticket: state.ticket,
+}), mapDispatchToProps)(TicketPage)

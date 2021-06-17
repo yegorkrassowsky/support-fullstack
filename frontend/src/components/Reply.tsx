@@ -1,16 +1,18 @@
 import React, {useRef, useEffect} from 'react'
 import Editor from './Editor'
 import InputErrors from '../components/InputErrors'
-import { useStore } from '../services/store'
+import { IFormState } from '../interfaces'
+import {AddResponseType} from '../types'
 
 type ReplyProps = {
   ticketId: number
+  formData: IFormState
+  addResponse: AddResponseType
   setEditorReady: () => void
 }
 
-const Reply: React.FC<ReplyProps> = ({ticketId, setEditorReady}) => {
-  const {addResponse, ticket} = useStore()
-  const {errors, loading} = ticket.addResponse
+const Reply: React.FC<ReplyProps> = ({ticketId, formData, addResponse, setEditorReady}) => {
+  const {errors, loading} = formData
   const contentErrors = errors?.content || null
 
   const editorRef = useRef<any>()
@@ -18,7 +20,6 @@ const Reply: React.FC<ReplyProps> = ({ticketId, setEditorReady}) => {
     editorRef.current = editor
     setEditorReady()
   }
-
   useEffect(()=>{
     if(editorRef.current !== undefined) {
       editorRef.current.mode.set( loading ? 'readonly' : 'design' )

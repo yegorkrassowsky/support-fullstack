@@ -1,16 +1,7 @@
 import {TicketActionTypes} from '../constants'
-import {ITicketState, ITicket, IFormErrors, IFormState, ITicketWithResponses, ITicketWithResponse, ILoading, IResponses} from '../interfaces'
+import {ITicketState, IFormState} from '../interfaces'
 import {loadingReducer, errorsReducer} from './index'
-
-export type TicketAction =
-| {type: TicketActionTypes.SET, ticket: ITicketWithResponses}
-| {type: TicketActionTypes.SET_TICKET, data: ITicket}
-| {type: TicketActionTypes.SET_LOADING} & ILoading
-| {type: TicketActionTypes.SET_RESPONSES} & IResponses
-| {type: TicketActionTypes.ADD_RESPONSE, data: ITicketWithResponse}
-| {type: TicketActionTypes.SET_ADD_RESPONSE_LOADING} & ILoading
-| {type: TicketActionTypes.SET_ADD_RESPONSE_ERRORS} & IFormErrors
-| {type: TicketActionTypes.SET_CHANGE_STATUS_LOADING} & ILoading
+import {TicketAction} from '../types'
 
 const initialAddResponseState = {
   loading: false,
@@ -25,7 +16,7 @@ export const initialTicketState = {
   addResponse: initialAddResponseState,
 }
 
-const ticketReducer = (state: ITicketState, action: TicketAction): ITicketState => {
+const ticketReducer = (state: ITicketState = initialTicketState, action: TicketAction): ITicketState => {
   switch(action.type) {
     case TicketActionTypes.SET:
       return {...state, ...action.ticket}

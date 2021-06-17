@@ -1,16 +1,7 @@
 import {ITicketListState, ITicket, ITicketItemState} from '../interfaces'
 import {TicketListActionTypes} from '../constants'
 import {loadingReducer} from './index'
-
-export type TicketListAction =
-| {type: TicketListActionTypes.SET, data: ITicket[], totalPages: number}
-| {type: TicketListActionTypes.SET_ITEM, ticket: ITicket}
-| {type: TicketListActionTypes.ADD_ITEM, ticket: ITicket}
-| {type: TicketListActionTypes.SET_PAGE, page: number}
-| {type: TicketListActionTypes.SET_LIMIT, limit: number}
-| {type: TicketListActionTypes.SET_STATUS, status: number | null}
-| {type: TicketListActionTypes.SET_LOADING, loading: boolean}
-| {type: TicketListActionTypes.SET_ITEM_LOADING, id: number, loading: boolean}
+import {TicketListAction} from '../types'
 
 const defaultParams = {
   page: 1,
@@ -37,7 +28,7 @@ const ticket = (state: ITicketItemState, action: TicketListAction): ITicket => {
 
 }
 
-const ticketListReducer = (state: ITicketListState, action: TicketListAction): ITicketListState => {  
+const ticketListReducer = (state: ITicketListState = initialTicketListState, action: TicketListAction): ITicketListState => {
   switch(action.type) {
     case TicketListActionTypes.SET:
       return {...state, data: action.data, totalPages: action.totalPages}
@@ -51,9 +42,9 @@ const ticketListReducer = (state: ITicketListState, action: TicketListAction): I
       return {...state, params: {...state.params, page: action.page}}
     case TicketListActionTypes.SET_STATUS:
       const status = action.status === state.params.status ? null : action.status
-      return {...state, params: {...state.params, status, page: 1}}
+      return {...state, params: {...state.params, status}}
     case TicketListActionTypes.SET_LIMIT:
-      return {...state, params: {...state.params, limit: action.limit, page: 1}}
+      return {...state, params: {...state.params, limit: action.limit}}
     case TicketListActionTypes.SET_LOADING:
       return loadingReducer(state, action.loading)
     default:

@@ -1,21 +1,29 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
+import { connect } from 'react-redux'
 import TicketListPage from './pages/TicketListPage'
 import TicketPage from './pages/TicketPage'
 import LoginPage from './pages/LoginPage'
 import NewTicketPage from './pages/NewTicketPage'
-import {useStore} from './services/store'
-import {userRoles} from './constants'
+import {roles} from './constants'
+import {ILoggedIn, IState, IUserRoles} from './interfaces'
+import { getTickets } from './actions/ticketList'
+import {ThunkDispatchType, GetTicketsType} from './types'
 
-const Routes: React.FC = () => {
-  const {auth, hasRole} = useStore()
+type RoutesProps = {
+  getTickets: GetTicketsType
+} & ILoggedIn & IUserRoles
 
-  if(auth.loggedIn) {
+const Routes: React.FC<RoutesProps> = ({loggedIn, userRoles, getTickets}) => {
+  useEffect(()=>{
+    if(loggedIn) getTickets()
+  }, [loggedIn, getTickets])
+  if(loggedIn) {
     return (
       <Switch>
         <Route path='/' exact component={TicketListPage} />
         <Route path='/ticket/:id' component={TicketPage} />
-        {hasRole(userRoles.client) ? <Route path='/new-ticket' exact component={NewTicketPage} /> : null}
+        {userRoles.includes(roles.client) ? <Route path='/new-ticket' exact component={NewTicketPage} /> : null}
         <Redirect to='/' />
       </Switch>
     )
@@ -28,4 +36,11 @@ const Routes: React.FC = () => {
   )
 }
 
-export default Routes
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  getTickets: () => dispatch(getTickets())
+})
+
+export default connect((state: IState) => ({
+  loggedIn: state.auth.loggedIn,
+  userRoles: state.auth.userRoles,
+}), mapDispatchToProps)(Routes)

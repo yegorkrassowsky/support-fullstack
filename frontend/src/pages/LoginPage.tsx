@@ -1,10 +1,16 @@
 import React, {useState} from 'react'
-import {useStore} from '../services/store'
+import {connect} from 'react-redux'
+import {login} from '../actions/auth'
 import InputErrors from '../components/InputErrors'
 import {GuestClientCredentials, GuestAgentCredentials} from '../constants'
+import {IState, ILogin, ILoading, IFormErrors} from '../interfaces'
+import {OnLoginType, ThunkDispatchType} from '../types'
 
-const LoginPage: React.FC = () => {
-  const {auth: {login: {loading, errors}}, login} = useStore()
+type LoginPageProps = {
+  onLogin: OnLoginType
+} & ILoading & IFormErrors
+
+const LoginPage: React.FC<LoginPageProps> = ({loading, errors, onLogin}) => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const emailErrors = errors?.email || null
@@ -12,7 +18,7 @@ const LoginPage: React.FC = () => {
 
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
-    login({email, password})    
+    onLogin({email, password})
   }
   const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
@@ -21,10 +27,10 @@ const LoginPage: React.FC = () => {
     setPassword(e.target.value)
   }
   const guestClientHandler = (e: React.MouseEvent) => {
-    login({email: GuestClientCredentials.EMAIL, password: GuestClientCredentials.PASS})
+    onLogin({email: GuestClientCredentials.EMAIL, password: GuestClientCredentials.PASS})
   }
   const guestAgentHandler = (e: React.MouseEvent) => {
-    login({email: GuestAgentCredentials.EMAIL, password: GuestAgentCredentials.PASS})
+    onLogin({email: GuestAgentCredentials.EMAIL, password: GuestAgentCredentials.PASS})
   }
 
   let emailClass = ['form-control']
@@ -69,4 +75,13 @@ const LoginPage: React.FC = () => {
   )
 }
 
-export default LoginPage
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  onLogin: (credentials: ILogin) => {
+    dispatch(login(credentials))
+  }
+})
+
+export default connect((state: IState) => ({
+  loading: state.auth.login.loading,
+  errors: state.auth.login.errors
+}), mapDispatchToProps)(LoginPage)

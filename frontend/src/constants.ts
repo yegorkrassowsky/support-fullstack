@@ -2,7 +2,6 @@ const CONSTANTS = {
   LEFT_PAGE: 'LEFT',
   RIGHT_PAGE: 'RIGHT',
   NOT_ASSIGNED_TICKET_STATUS: 'not assigned',
-  INIT: 'INIT',
 }
 
 export default CONSTANTS
@@ -11,10 +10,14 @@ export const ticketStatuses = [
   'closed', 'pending', 'replied'
 ]
 
-export const userRoles = {
+export const roles = {
   admin: 'admin',
   agent: 'agent',
   client: 'client',
+}
+
+export enum RootActionTypes {
+  INIT = 'INIT'
 }
 
 export enum AuthActionTypes {

@@ -1,17 +1,18 @@
 import './scss/App.scss'
 import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
+import {Provider} from 'react-redux'
 import Navbar from './components/Navbar'
 import Routes from './Routes'
-import {StoreProvider} from './services/store'
+import {store} from './services/store'
 
 function App() {
   return (
     <Router>
-        <StoreProvider>
-          <Navbar />
-          <div className="container main-container"><Routes /></div>
-        </StoreProvider>
+      <Provider store={store}>
+        <Navbar />
+        <div className="container main-container"><Routes /></div>
+      </Provider>
     </Router>
   )
 }

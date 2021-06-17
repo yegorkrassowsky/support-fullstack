@@ -1,13 +1,28 @@
 import { FormErrorsType } from "./types"
 
+export interface IID {
+  id: number
+}
+
 export interface ILoading {
   loading: boolean
 }
 
-export interface ITicket {
-  id: number
+export interface ITotalPages {
+  totalPages: number
+}
+
+export interface ITicketSubject {
   subject: string
+}
+
+export interface ITicketContent {
   content: string
+}
+
+export interface IAddTicket extends ITicketSubject, ITicketContent {}
+
+export interface ITicket extends IID, ITicketSubject, ITicketContent {
   status: number
   agent: string
   author: string
@@ -19,8 +34,7 @@ export interface ITicketItemState extends ITicket {
   loading?: boolean
 }
 
-export interface IResponse {
-  id: number
+export interface IResponse extends IID {
   content: string
   author: string
   created_at: string
@@ -34,8 +48,7 @@ export interface IResponses {
   responses: IResponse[],
 }
 
-export interface IPagination {
-  totalPages: number
+export interface IPagination extends ITotalPages {
   currentPage: number
   onPageChanged: (page: number) => void
   pageNeighbours?: number
@@ -47,16 +60,18 @@ export interface IFormErrors {
 
 export interface IFormState extends ILoading, IFormErrors {}
 
-export interface IAuthState {
+export interface ILoggedIn {
   loggedIn: boolean
-  userName: string
-  userRoles: string[]
+}
+export interface IAuthState extends ILoggedIn, IUserName, IUserRoles {
   login: IFormState
 }
 
-export interface ITicketListState extends ILoading {
+export interface ITicketList {
   data: ITicket[]
-  totalPages: number
+}
+
+export interface ITicketListState extends ITicketList, ILoading, ITotalPages {
   params: ITicketListParams
 }
 
@@ -75,9 +90,8 @@ export interface ITicketWithResponse {
   response: IResponse
 }
 
-export interface ITicketWithResponses extends IResponses {
+export interface ITicketWithResponses extends IResponses, ITotalPages {
   data: ITicket | null
-  totalPages: number
 }
 export interface ITicketState extends ITicketWithResponses, ILoading, IResponses {
   addResponse: IFormState
@@ -89,3 +103,19 @@ export interface ILogin {
   password: string,
 }
 
+export interface IState {
+  auth: IAuthState
+  ticketList: ITicketListState
+  ticket: ITicketState
+  newTicket: IFormState
+}
+
+export interface IUserName {
+  userName: string
+}
+
+export interface IUserRoles {
+  userRoles: string[]
+}
+
+export interface IUserData extends IUserName, IUserRoles {}

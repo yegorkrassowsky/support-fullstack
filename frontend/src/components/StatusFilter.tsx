@@ -1,10 +1,15 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import {ticketStatuses} from '../constants'
-import {useStore} from '../services/store'
+import {ThunkDispatchType, SetTicketListStatusType, TicketListStatusType} from '../types'
+import {setTicketListStatus} from '../actions/ticketList'
 
-const StatusFilter: React.FC = () => {
-  const {ticketList, setTicketListStatus} = useStore()
-  const currentStatus = ticketList.params.status
+type StatusFilterProps = {
+  currentStatus: TicketListStatusType
+  setTicketListStatus: SetTicketListStatusType
+}
+
+const StatusFilter: React.FC<StatusFilterProps> = ({currentStatus, setTicketListStatus}) => {
   const labelText = 'Filter by Status'
   return (
     <div className="status-filter">
@@ -23,8 +28,13 @@ const StatusFilter: React.FC = () => {
         })}
       </div>
     </div>
-
   )
 }
 
-export default StatusFilter
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => {
+  return {
+    setTicketListStatus: (status: TicketListStatusType) => dispatch(setTicketListStatus(status))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(StatusFilter)

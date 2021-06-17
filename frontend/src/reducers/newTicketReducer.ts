@@ -1,17 +1,14 @@
 import {NewTicketActionTypes} from '../constants'
-import { IFormState, ILoading, IFormErrors } from "../interfaces"
+import {IFormState} from "../interfaces"
 import {loadingReducer, errorsReducer} from './index'
-
-type NewTicketAction =
-| {type: NewTicketActionTypes.SET_LOADING} & ILoading
-| {type: NewTicketActionTypes.SET_ERRORS} & IFormErrors
+import {NewTicketAction} from '../types'
 
 export const initialNewTicketState = {
   loading: false,
   errors: null,
 }
 
-const newTicketReducer = (state: IFormState, action: NewTicketAction): IFormState => {
+const newTicketReducer = (state: IFormState = initialNewTicketState, action: NewTicketAction): IFormState => {
   switch(action.type) {
     case NewTicketActionTypes.SET_LOADING:
       return loadingReducer(state, action.loading)

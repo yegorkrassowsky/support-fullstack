@@ -1,14 +1,16 @@
 import React from 'react'
-import { useStore } from '../services/store'
+import { ITicket } from '../interfaces'
+import {ChangeStatusType} from '../types'
 
-const TicketInfo: React.FC = () => {
-  const {ticket: {data: ticket, changeStatusLoading: loading}, changeStatus} = useStore()
-  const id = ticket?.id || null
-  const author = ticket?.author || null
-  const subject = ticket?.subject || null
-  const content = ticket?.content || null
-  const status = ticket?.status === undefined ? 1 : ticket.status
-  const changeStatusHandler = () => changeStatus(id!, status ? 0 : 1)
+type TicketInfoProps = {
+  ticket: ITicket
+  loading: boolean
+  changeStatus: ChangeStatusType
+}
+
+const TicketInfo: React.FC<TicketInfoProps> = ({ticket, loading, changeStatus}) => {
+  const {id, author, subject, content, status} = ticket
+  const changeStatusHandler = () => changeStatus(id, status ? 0 : 1)
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
   const changeStatusLoading = <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
   const changeStatusClasses = ['btn', (status ? 'btn-outline-danger' : 'btn-outline-success')]

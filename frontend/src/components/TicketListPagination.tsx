@@ -1,16 +1,27 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import Pagination from '../components/Pagination'
-import {useStore} from '../services/store'
+import {SetTicketListPageType, ThunkDispatchType} from '../types'
+import {setTicketListPage} from '../actions/ticketList'
 
-const TicketListPagination: React.FC = () => {
-  const {ticketList, setTicketListPage} = useStore()
+type TicketListPaginationProps = {
+  page: number,
+  totalPages: number,
+  setTicketListPage: SetTicketListPageType
+}
+
+const TicketListPagination: React.FC<TicketListPaginationProps> = ({page, totalPages, setTicketListPage}) => {
   const paginationProps = {
-    currentPage: ticketList.params.page,
-    totalPages: ticketList.totalPages,
+    currentPage: page,
+    totalPages: totalPages,
     onPageChanged: setTicketListPage,
     pageNeighbours: 1
   }
   return <Pagination {...paginationProps} />
 }
 
-export default TicketListPagination
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+    setTicketListPage: (page: number) => dispatch(setTicketListPage(page))
+})
+
+export default connect(null, mapDispatchToProps)(TicketListPagination)

@@ -1,6 +1,7 @@
 import { errorsReducer, loadingReducer } from '.'
 import {AuthActionTypes} from '../constants'
-import {IAuthState, IFormErrors, ILoading} from '../interfaces'
+import {IAuthState} from '../interfaces'
+import {AuthAction} from '../types'
 
 const initialLoginState = {
   loading: false,
@@ -23,12 +24,7 @@ export const initialAuthState: IAuthState = {
   login: authDefaults.login,
 }
 
-type AuthAction =
-| {type: AuthActionTypes.LOGIN, userName: string, userRoles: string[]}
-| {type: AuthActionTypes.SET_LOGIN_LOADING} & ILoading
-| {type: AuthActionTypes.SET_LOGIN_ERRORS} & IFormErrors
-
-const authReducer = (state: IAuthState, action: AuthAction): IAuthState => {
+const authReducer = (state: IAuthState = initialAuthState, action: AuthAction): IAuthState => {
   switch (action.type) {
     case AuthActionTypes.LOGIN:
       return {...state, ...{

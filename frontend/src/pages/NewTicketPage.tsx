@@ -1,14 +1,25 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {useStore} from '../services/store'
+import { connect } from 'react-redux'
+import {addTicket, setAddTicketErrors} from '../actions/newTicket'
 import InputErrors from '../components/InputErrors'
 import Loader from '../components/Loader'
 import Editor from '../components/Editor'
+import {ThunkDispatchType, AddTicketType, FormErrorsType, SetErrorsType} from '../types'
+import {IAddTicket, IState, IFormState} from '../interfaces'
+import useFunctions from '../functions'
 
-const NewTicketPage: React.FC = () => {
-  const {addTicket, setAddTicketErrors, newTicket: {errors, loading}} = useStore()
+type NewTicketPageProps = {
+  newTicket: IFormState
+  addTicket: AddTicketType
+  addTicketErrors: SetErrorsType
+}
+
+const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors, newTicket}) => {
+  const {gotoTicket} = useFunctions()
+  const {errors, loading} = newTicket
   useEffect(()=>{
-    setAddTicketErrors(null)
-  }, [setAddTicketErrors])
+    addTicketErrors(null)
+  }, [addTicketErrors])
   const validated = !!errors
   const subjectErrors = errors?.subject || null
   const contentErrors = errors?.content || null
@@ -43,7 +54,7 @@ const NewTicketPage: React.FC = () => {
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current !== undefined) {
-      addTicket(subject, editorRef.current.getContent())
+      addTicket({subject, content: editorRef.current.getContent()}, gotoTicket)
     }
   }
 
@@ -79,4 +90,13 @@ const NewTicketPage: React.FC = () => {
   )
 }
 
-export default NewTicketPage
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  addTicket: (ticket: IAddTicket, callback: Function) => {
+    dispatch(addTicket(ticket, callback))
+  },
+  addTicketErrors: (errors: FormErrorsType) => dispatch(setAddTicketErrors(errors))
+})
+
+export default connect((state: IState) => ({
+  newTicket: state.newTicket,
+}), mapDispatchToProps)(NewTicketPage)

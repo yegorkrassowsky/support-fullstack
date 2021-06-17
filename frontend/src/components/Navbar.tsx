@@ -1,10 +1,21 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import {useStore} from '../services/store'
+import {logout} from '../actions/auth'
+import {IState, IAuthState} from '../interfaces'
+import {ThunkDispatchType} from '../types'
 
-const Navbar: React.FC = () => {
-  const {auth, logout} = useStore()
-  if(!auth.loggedIn) {
+type NavbarProps = {
+  auth: IAuthState
+  onLogout: Function
+}
+
+const Navbar: React.FC<NavbarProps> = ({auth, onLogout}) => {
+  const {loggedIn, userName} = auth
+  const logoutHandler = (e: React.MouseEvent) => {
+    onLogout()
+  }
+  if(!loggedIn) {
     return <></>
   }
   return (
@@ -15,8 +26,8 @@ const Navbar: React.FC = () => {
             <NavLink className="nav-link" to='/'>Dashboard</NavLink>
           </li>
           <li className="nav-item">
-            <span className="navbar-text">Hi, {auth.userName}</span>
-            <button className="btn btn-link nav-link logout-btn" title="Logout" onClick={logout}><i className="fas fa-door-open"></i></button>
+            <span className="navbar-text">Hi, {userName}</span>
+            <button className="btn btn-link nav-link logout-btn" title="Logout" onClick={logoutHandler}><i className="fas fa-door-open"></i></button>
           </li>
         </ul>
       </div>
@@ -25,4 +36,12 @@ const Navbar: React.FC = () => {
   )
 }
 
-export default Navbar
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  onLogout: () => {
+    dispatch(logout())
+  }
+})
+
+export default connect((state: IState) => ({
+  auth: state.auth
+}), mapDispatchToProps)(Navbar)

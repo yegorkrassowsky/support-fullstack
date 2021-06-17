@@ -1,9 +1,13 @@
 import React from 'react'
-import {useStore} from '../services/store'
+import {connect} from 'react-redux'
+import {SetTicketListLimitType, ThunkDispatchType} from '../types'
+import {setTicketListLimit} from '../actions/ticketList'
 
-const PageLimit: React.FC = () => {
-  const {ticketList, setTicketListLimit} = useStore()
-  const currentLimit = ticketList.params.limit
+type PageLimitProps = {
+  currentLimit: number
+  setTicketListLimit: SetTicketListLimitType
+}
+const PageLimit: React.FC<PageLimitProps> = ({currentLimit, setTicketListLimit}) => {
   const limits = [10, 25, 50]
   const changeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTicketListLimit(+e.target.value)
@@ -19,4 +23,10 @@ const PageLimit: React.FC = () => {
   )
 }
 
-export default PageLimit
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => {
+  return {
+    setTicketListLimit: (limit: number) => dispatch(setTicketListLimit(limit))
+  }
+}
+
+export default connect(null, mapDispatchToProps)(PageLimit)

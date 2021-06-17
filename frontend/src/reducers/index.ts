@@ -1,28 +1,17 @@
+import {combineReducers} from 'redux'
 import authReducer, {initialAuthState, authDefaults} from './authReducer'
 import ticketListReducer, {initialTicketListState} from './ticketListReducer'
 import ticketReducer, {initialTicketState} from './ticketReducer'
 import newTicketReducer, {initialNewTicketState} from './newTicketReducer'
-import CONSTANTS from '../constants'
-import { FormErrorsType } from "../types";
+import {RootActionTypes} from '../constants'
+import { ActionType, FormErrorsType } from "../types";
+import {IState} from '../interfaces'
 
 const initialState = {
   auth: initialAuthState,
   ticketList: initialTicketListState,
   ticket: initialTicketState,
   newTicket: initialNewTicketState,
-}
-
-function combineReducers(reducers: {[key: string]: Function}) {  
-  return (state: any = {}, action: any) => {
-    if(action.type === CONSTANTS.INIT) {
-      return {...initialState, auth: authDefaults}
-    }
-    const newState: any = {};
-    for (let key in reducers) {
-      newState[key] = reducers[key](state[key], action);
-    }
-    return newState;
-  }
 }
 
 const reducer = combineReducers({
@@ -32,7 +21,14 @@ const reducer = combineReducers({
   newTicket: newTicketReducer,
 })
 
+const rootReducer = (state: IState = initialState, action: ActionType) => {
+  if(action.type === RootActionTypes.INIT) {
+    return {...initialState, auth: authDefaults}
+  }
+  return reducer(state, action)
+}
+
 const loadingReducer = (state: any, loading: boolean) => ({...state, loading})
 const errorsReducer = (state: any, errors: FormErrorsType) => ({...state, errors})
 
-export { initialState, reducer, loadingReducer, errorsReducer }
+export { initialState, rootReducer, loadingReducer, errorsReducer }
