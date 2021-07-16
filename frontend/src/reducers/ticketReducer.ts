@@ -19,7 +19,7 @@ export const initialTicketState = {
 const ticketReducer = (state: ITicketState = initialTicketState, action: TicketAction): ITicketState => {
   switch(action.type) {
     case TicketActionTypes.SET:
-      return {...state, ...action.ticket}
+      return {...state, ...action.data}
     case TicketActionTypes.SET_TICKET:
       return {...state, data: action.data}
     case TicketActionTypes.SET_LOADING:

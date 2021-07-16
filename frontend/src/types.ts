@@ -12,11 +12,12 @@ import {
   IUserRoles,
   ILogin,
   IState,
-  ITicketListParams,
   ITotalPages,
   ITicketList,
   IAddTicket,
-  IResponse
+  IPage,
+  ILimit,
+  IStatusOrNull,
 } from './interfaces'
 import {AuthActionTypes, TicketListActionTypes, NewTicketActionTypes, TicketActionTypes, RootActionTypes} from './constants'
 import {ThunkDispatch} from 'redux-thunk'
@@ -35,21 +36,21 @@ export type AuthAction =
 | {type: AuthActionTypes.SET_LOGIN_ERRORS} & IFormErrors
 
 export type TicketListAction =
-| {type: TicketListActionTypes.SET, data: ITicket[], totalPages: number}
-| {type: TicketListActionTypes.SET_ITEM, ticket: ITicket}
-| {type: TicketListActionTypes.ADD_ITEM, ticket: ITicket}
-| {type: TicketListActionTypes.SET_PAGE, page: number}
-| {type: TicketListActionTypes.SET_LIMIT, limit: number}
-| {type: TicketListActionTypes.SET_STATUS, status: number | null}
-| {type: TicketListActionTypes.SET_LOADING, loading: boolean}
-| {type: TicketListActionTypes.SET_ITEM_LOADING, id: number, loading: boolean}
+| {type: TicketListActionTypes.SET} & ITicketList & ITotalPages
+| {type: TicketListActionTypes.SET_ITEM, data: ITicket}
+| {type: TicketListActionTypes.ADD_ITEM, data: ITicket}
+| {type: TicketListActionTypes.SET_PAGE} & IPage
+| {type: TicketListActionTypes.SET_LIMIT} & ILimit
+| {type: TicketListActionTypes.SET_STATUS} & IStatusOrNull
+| {type: TicketListActionTypes.SET_LOADING} & ILoading
+| {type: TicketListActionTypes.SET_ITEM_LOADING} & IID & ILoading
 
 export type NewTicketAction =
 | {type: NewTicketActionTypes.SET_LOADING} & ILoading
 | {type: NewTicketActionTypes.SET_ERRORS} & IFormErrors
 
 export type TicketAction =
-| {type: TicketActionTypes.SET, ticket: ITicketWithResponses}
+| {type: TicketActionTypes.SET, data: ITicketWithResponses}
 | {type: TicketActionTypes.SET_TICKET, data: ITicket}
 | {type: TicketActionTypes.SET_LOADING} & ILoading
 | {type: TicketActionTypes.SET_RESPONSES} & IResponses

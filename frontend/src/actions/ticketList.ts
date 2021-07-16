@@ -69,7 +69,7 @@ const setTicketList: SetTicketListActionCreatorType = ({data, totalPages}) => ({
 
 const setTicketListItemLoading: SetTicketListItemLoadingActionCreatorType = ({id, loading}) => ({type: TicketListActionTypes.SET_ITEM_LOADING, id, loading})
 
-export const setTicketListItem: SetTicketListItemActionCreatorType = (ticket) => ({type: TicketListActionTypes.SET_ITEM, ticket})
+export const setTicketListItem: SetTicketListItemActionCreatorType = (data) => ({type: TicketListActionTypes.SET_ITEM, data})
 
-export const addTicketListItem: SetTicketListItemActionCreatorType = (ticket) => ({type: TicketListActionTypes.ADD_ITEM, ticket})
+export const addTicketListItem: SetTicketListItemActionCreatorType = (data) => ({type: TicketListActionTypes.ADD_ITEM, data})
 

@@ -19,7 +19,7 @@ export const initialTicketListState = {
 const ticket = (state: ITicketItemState, action: TicketListAction): ITicket => {
   switch(action.type) {
     case TicketListActionTypes.SET_ITEM:
-      return state.id === action.ticket.id ? action.ticket : state
+      return state.id === action.data.id ? action.data : state
     case TicketListActionTypes.SET_ITEM_LOADING:
       return state.id === action.id ? loadingReducer(state, action.loading) : state
     default:
@@ -33,7 +33,7 @@ const ticketListReducer = (state: ITicketListState = initialTicketListState, act
     case TicketListActionTypes.SET:
       return {...state, data: action.data, totalPages: action.totalPages}
     case TicketListActionTypes.ADD_ITEM:
-      return {...state, data: [action.ticket, ...state.data]}
+      return {...state, data: [action.data, ...state.data]}
       case TicketListActionTypes.SET_ITEM:
       return {...state, data: state.data.map((t: ITicketItemState) => ticket(t, action))}
     case TicketListActionTypes.SET_ITEM_LOADING:

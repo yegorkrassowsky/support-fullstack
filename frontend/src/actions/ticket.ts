@@ -15,7 +15,7 @@ import {setTicketListItem} from './ticketList'
 
 const setTicketLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_LOADING, loading})
 const setChangeStatusLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_CHANGE_STATUS_LOADING, loading})
-const setTicketPageData: SetTicketPageDataActionCreatorType = ticket => ({type: TicketActionTypes.SET, ticket})
+const setTicketPageData: SetTicketPageDataActionCreatorType = data => ({type: TicketActionTypes.SET, data})
 const setTicket: SetTicketActionCreatorType = data => ({type: TicketActionTypes.SET_TICKET, data})
 const addResponseItem: AddResponseItemActionCreatorType = data => ({type: TicketActionTypes.ADD_RESPONSE, data})
 const setAddResponseLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_ADD_RESPONSE_LOADING, loading})
