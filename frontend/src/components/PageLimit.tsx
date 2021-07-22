@@ -7,8 +7,10 @@ type PageLimitProps = {
   currentLimit: number
   setTicketListLimit: SetTicketListLimitType
 }
+
+const limits = [10, 25, 50]
+
 const PageLimit: React.FC<PageLimitProps> = ({currentLimit, setTicketListLimit}) => {
-  const limits = [10, 25, 50]
   const changeHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTicketListLimit(+e.target.value)
   }
