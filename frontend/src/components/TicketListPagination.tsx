@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import Pagination from '../components/Pagination'
 import {SetTicketListPageType, ThunkDispatchType} from '../types'
 import {setTicketListPage} from '../actions/ticketList'
+import { IState } from '../interfaces'
 
 type TicketListPaginationProps = {
   page: number,
@@ -24,4 +25,7 @@ const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
     setTicketListPage: (page: number) => dispatch(setTicketListPage(page))
 })
 
-export default connect(null, mapDispatchToProps)(TicketListPagination)
+export default connect((state: IState) => ({
+  page: state.ticketList.params.page,
+  totalPages: state.ticketList.totalPages,
+}), mapDispatchToProps)(TicketListPagination)

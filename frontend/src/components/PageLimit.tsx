@@ -2,6 +2,7 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {SetTicketListLimitType, ThunkDispatchType} from '../types'
 import {setTicketListLimit} from '../actions/ticketList'
+import { IState } from '../interfaces'
 
 type PageLimitProps = {
   currentLimit: number
@@ -31,4 +32,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatchType) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(PageLimit)
+export default connect((state: IState) => ({
+  currentLimit: state.ticketList.params.limit
+}), mapDispatchToProps)(PageLimit)

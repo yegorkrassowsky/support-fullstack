@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {ticketStatuses} from '../constants'
 import {ThunkDispatchType, SetTicketListStatusType, TicketListStatusType} from '../types'
 import {setTicketListStatus} from '../actions/ticketList'
+import { IState } from '../interfaces'
 
 type StatusFilterProps = {
   currentStatus: TicketListStatusType
@@ -37,4 +38,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatchType) => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(StatusFilter)
+export default connect((state: IState) => ({
+  currentStatus: state.ticketList.params.status
+}), mapDispatchToProps)(StatusFilter)
