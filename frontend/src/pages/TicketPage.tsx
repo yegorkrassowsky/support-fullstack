@@ -4,20 +4,20 @@ import TicketInfo from '../components/TicketInfo'
 import TicketMeta from '../components/TicketMeta'
 import Reply from '../components/Reply'
 import ResponseList from '../components/ResponseList'
+import { ILoading, IState } from '../interfaces'
+import { connect } from 'react-redux'
 
-type TicketPageProps = {}
+type TicketPageProps = {} & ILoading
 
-const TicketPage: React.FC<TicketPageProps> = () => {
+const TicketPage: React.FC<TicketPageProps> = ({loading}) => {
   const [pageReady, setPageReady] = useState(false)
   const [editorReady, setEditorReady] = useState(false)
-  const [listReady, setListReady] = useState(false)
   const onEditorReady = () => setEditorReady(true)
-  const onListReady = () => setListReady(true)
   useEffect(()=>{
-    if(! pageReady && listReady && editorReady) {
+    if(! pageReady && ! loading && editorReady) {
       setPageReady(true)
     }
-  }, [pageReady, listReady, editorReady])
+  }, [pageReady, loading, editorReady])
 
   let ticketContainerClass = ['ticket-container']
 
@@ -38,7 +38,7 @@ const TicketPage: React.FC<TicketPageProps> = () => {
           </div>
           <div className="col-lg-9 order-lg-1">
             <TicketInfo />
-            <ResponseList onListReady={onListReady} />
+            <ResponseList loading={loading} />
             <Reply onEditorReady={onEditorReady} />
           </div>
         </div>
@@ -47,4 +47,6 @@ const TicketPage: React.FC<TicketPageProps> = () => {
   )
 }
 
-export default TicketPage
+export default connect((state: IState) => ({
+  loading: state.ticket.loading,
+}))(TicketPage)

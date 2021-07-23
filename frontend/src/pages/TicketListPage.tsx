@@ -1,5 +1,4 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import TicketListPagination from '../components/TicketListPagination'
 import PageLimit from '../components/PageLimit'
 import StatusFilter from '../components/StatusFilter'

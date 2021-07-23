@@ -35,16 +35,10 @@ const getQueryParams = (urlParams: URLSearchParams): DataQueryProps => {
 }
 
 type ResponseListProps = {
-  onListReady: () => void
   setTicketPage: SetTicketPageType
-} & IResponses & ILoading & ITotalPages
+} & IResponses & ITotalPages & ILoading
 
-const ResponseList: React.FC<ResponseListProps> = ({responses, loading, totalPages, setTicketPage, onListReady}) => {
-  useEffect(()=>{
-    if(!loading){
-      onListReady()
-    }
-  }, [loading, onListReady])
+const ResponseList: React.FC<ResponseListProps> = ({responses, loading, totalPages, setTicketPage}) => {
   const {id: ticketIdParam} = useParams<{id: string}>()
   const ticketId = +ticketIdParam
   const location = useLocation()
@@ -117,7 +111,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
 })
 
 export default connect((state: IState) => ({
-  loading: state.ticket.loading,
   responses: state.ticket.responses,
   totalPages: state.ticket.totalPages,
 }), mapDispatchToProps)(ResponseList)
