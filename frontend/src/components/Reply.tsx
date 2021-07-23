@@ -1,24 +1,30 @@
 import React, {useRef, useEffect} from 'react'
 import Editor from './Editor'
 import InputErrors from '../components/InputErrors'
-import { IFormState } from '../interfaces'
-import {AddResponseType} from '../types'
+import {addResponse, setAddResponseErrors} from '../actions/ticket'
+import { IFormState, IState } from '../interfaces'
+import {AddResponseType, ThunkDispatchType, SetErrorsType, FormErrorsType} from '../types'
+import { connect } from 'react-redux'
 
 type ReplyProps = {
-  ticketId: number
-  formData: IFormState
+  formState: IFormState
   addResponse: AddResponseType
-  setEditorReady: () => void
+  addResponseErrors: SetErrorsType
+  onEditorReady: () => void
 }
 
-const Reply: React.FC<ReplyProps> = ({ticketId, formData, addResponse, setEditorReady}) => {
-  const {errors, loading} = formData
+const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors, onEditorReady}) => {
+  useEffect(()=>{
+    addResponseErrors(null)
+  }, [addResponseErrors])
+
+  const {errors, loading} = formState
   const contentErrors = errors?.content || null
 
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
     editorRef.current = editor
-    setEditorReady()
+    onEditorReady()
   }
   useEffect(()=>{
     if(editorRef.current !== undefined) {
@@ -30,7 +36,7 @@ const Reply: React.FC<ReplyProps> = ({ticketId, formData, addResponse, setEditor
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current) {
-      addResponse(ticketId, editorRef.current.getContent(), resetEditor)
+      addResponse(editorRef.current.getContent(), resetEditor)
     }
   }
 
@@ -60,4 +66,11 @@ const Reply: React.FC<ReplyProps> = ({ticketId, formData, addResponse, setEditor
   )
 }
 
-export default Reply
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  addResponse: (content: string, callback: Function) => dispatch(addResponse(content, callback)),
+  addResponseErrors: (errors: FormErrorsType) => dispatch(setAddResponseErrors(errors)),
+})
+
+export default connect((state: IState) => ({
+  formState: state.ticket.addResponse,
+}), mapDispatchToProps)(Reply)

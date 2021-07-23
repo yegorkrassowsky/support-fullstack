@@ -1,14 +1,19 @@
 import React from 'react'
-import { ITicket } from '../interfaces'
-import {ChangeStatusType} from '../types'
+import {connect} from 'react-redux'
+import {changeStatus} from '../actions/ticket'
+import { ITicket, IState } from '../interfaces'
+import {ThunkDispatchType, ChangeStatusType} from '../types'
 
 type TicketInfoProps = {
-  ticket: ITicket
+  ticket: ITicket | null
   loading: boolean
   changeStatus: ChangeStatusType
 }
 
 const TicketInfo: React.FC<TicketInfoProps> = ({ticket, loading, changeStatus}) => {
+  if(!ticket){
+    return (<></>)
+  }
   const {id, author, subject, content, status} = ticket
   const changeStatusHandler = () => changeStatus(id, status ? 0 : 1)
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
@@ -35,4 +40,11 @@ const TicketInfo: React.FC<TicketInfoProps> = ({ticket, loading, changeStatus}) 
   )
 }
 
-export default TicketInfo
+const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
+  changeStatus: (ticketId: number, status: number) => dispatch(changeStatus(ticketId, status)),
+})
+
+export default connect((state: IState) => ({
+  ticket: state.ticket.data,
+  loading: state.ticket.changeStatusLoading,
+}), mapDispatchToProps)(TicketInfo)

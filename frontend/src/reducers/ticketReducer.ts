@@ -8,7 +8,7 @@ const initialAddResponseState = {
   errors: null,
 }
 export const initialTicketState = {
-  loading: false,
+  loading: true,
   changeStatusLoading: false,
   data: null,
   responses: [],
@@ -18,8 +18,8 @@ export const initialTicketState = {
 
 const ticketReducer = (state: ITicketState = initialTicketState, action: TicketAction): ITicketState => {
   switch(action.type) {
-    case TicketActionTypes.SET:
-      return {...state, ...action.data}
+    case TicketActionTypes.SET_TOTAL_PAGES:
+      return {...state, totalPages: action.totalPages}
     case TicketActionTypes.SET_TICKET:
       return {...state, data: action.data}
     case TicketActionTypes.SET_LOADING:

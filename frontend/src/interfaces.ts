@@ -38,8 +38,11 @@ export interface IStatus {
 
 export interface IAddTicket extends ISubject, IContent {}
 
-export interface ITicket extends IID, ISubject, IContent, IAuthor, ICreatedAt, IUpdatedAt, IStatus {
+export interface IAgent {
   agent: string
+}
+
+export interface ITicket extends IID, ISubject, IContent, IAuthor, ICreatedAt, IUpdatedAt, IStatus, IAgent {
 }
 
 export interface ITicketItemState extends ITicket, Partial<ILoading> {}
@@ -106,6 +109,7 @@ export interface ITicketWithResponse {
 export interface ITicketWithResponses extends IResponses, ITotalPages {
   data: ITicket | null
 }
+
 export interface ITicketState extends ITicketWithResponses, ILoading, IResponses {
   addResponse: IFormState
   changeStatusLoading: boolean

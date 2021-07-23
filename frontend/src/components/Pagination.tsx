@@ -58,7 +58,9 @@ const Pagination: React.FC<IPagination> = ({totalPages, currentPage, onPageChang
   }, [pageNeighbours, currentPage, totalPages])
   const pages = useMemo(fetchPageNumbers, [fetchPageNumbers])
   const gotoPage = (page: number) => {
-    onPageChanged(Math.max(0, Math.min(page, totalPages)))
+    if(page !== currentPage) {
+      onPageChanged(Math.max(0, Math.min(page, totalPages)))
+    }
   }
   const clickHandler = (e: React.MouseEvent, page: number) => {
     e.preventDefault()

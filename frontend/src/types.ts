@@ -18,6 +18,7 @@ import {
   IPage,
   ILimit,
   IStatusOrNull,
+  IResponse,
 } from './interfaces'
 import {AuthActionTypes, TicketListActionTypes, NewTicketActionTypes, TicketActionTypes, RootActionTypes} from './constants'
 import {ThunkDispatch} from 'redux-thunk'
@@ -50,7 +51,7 @@ export type NewTicketAction =
 | {type: NewTicketActionTypes.SET_ERRORS} & IFormErrors
 
 export type TicketAction =
-| {type: TicketActionTypes.SET, data: ITicketWithResponses}
+| {type: TicketActionTypes.SET_TOTAL_PAGES} & ITotalPages
 | {type: TicketActionTypes.SET_TICKET, data: ITicket}
 | {type: TicketActionTypes.SET_LOADING} & ILoading
 | {type: TicketActionTypes.SET_RESPONSES} & IResponses
@@ -71,8 +72,9 @@ export type SetTicketListActionCreatorType = (tickets: ITicketList & ITotalPages
 export type SetTicketListItemLoadingActionCreatorType = (data: IID & ILoading) => TicketListAction
 export type SetTicketListItemActionCreatorType = (ticket: ITicket) => TicketListAction
 
-export type SetTicketPageDataActionCreatorType = (ticket: ITicketWithResponses) => TicketAction
 export type SetTicketActionCreatorType = (ticket: ITicket) => TicketAction
+export type SetTicketResponsesActionCreatorType = (responses: IResponse[]) => TicketAction
+export type SetTicketTotalPagesActionCreatorType = (totalPages: number) => TicketAction
 export type AddResponseItemActionCreatorType = (data: ITicketWithResponse) => TicketAction
 
 // Thunks
@@ -90,7 +92,7 @@ export type TakeTicketThunkType = (id: number) => DispatchCallbackType
 export type AddTicketThunkType = (ticket: IAddTicket, callback: Function) => DispatchCallbackType
 export type SetTicketPageThunkType = (ticketId: number, page: number) => DispatchCallbackType
 export type ChangeStatusThunkType = (ticketId: number, status: number) => DispatchCallbackType
-export type AddResponseThunkType = (ticketId: number, content: string, callback: Function) => DispatchCallbackType
+export type AddResponseThunkType = (content: string, callback: Function) => DispatchCallbackType
 
 // Functions Dispatched To Props
 
@@ -105,4 +107,4 @@ export type TakeTicketType = (id: number) => void
 export type AddTicketType = (ticket: IAddTicket, callback: Function) => void
 export type SetTicketPageType = (ticketId: number, page: number) => void
 export type ChangeStatusType = (ticketId: number, status: number) => void
-export type AddResponseType = (ticketId: number, content: string, callback: Function) => void
+export type AddResponseType = (content: string, callback: Function) => void

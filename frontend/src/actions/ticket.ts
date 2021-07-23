@@ -2,36 +2,39 @@ import {TicketActionTypes} from '../constants'
 import {
   ErrorsActionCreatorType,
   LoadingActionCreatorType,
-  SetTicketPageDataActionCreatorType,
+  SetTicketResponsesActionCreatorType,
   SetTicketPageThunkType,
   ChangeStatusThunkType,
   SetTicketActionCreatorType,
   AddResponseThunkType,
   AddResponseItemActionCreatorType,
-  ThunkDispatchType
+  ThunkDispatchType,
+  GetStateType,
+  SetTicketTotalPagesActionCreatorType,
 } from '../types'
 import {request} from '../services/store'
 import {setTicketListItem} from './ticketList'
 
 const setTicketLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_LOADING, loading})
 const setChangeStatusLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_CHANGE_STATUS_LOADING, loading})
-const setTicketPageData: SetTicketPageDataActionCreatorType = data => ({type: TicketActionTypes.SET, data})
+const setTicketResponses: SetTicketResponsesActionCreatorType = responses => ({type: TicketActionTypes.SET_RESPONSES, responses})
+const setTicketTotalPages: SetTicketTotalPagesActionCreatorType = totalPages => ({type: TicketActionTypes.SET_TOTAL_PAGES, totalPages})
 const setTicket: SetTicketActionCreatorType = data => ({type: TicketActionTypes.SET_TICKET, data})
 const addResponseItem: AddResponseItemActionCreatorType = data => ({type: TicketActionTypes.ADD_RESPONSE, data})
 const setAddResponseLoading: LoadingActionCreatorType = loading => ({type: TicketActionTypes.SET_ADD_RESPONSE_LOADING, loading})
 export const setAddResponseErrors: ErrorsActionCreatorType = errors => ({type: TicketActionTypes.SET_ADD_RESPONSE_ERRORS, errors})
 
 export const setTicketPage: SetTicketPageThunkType = (ticketId, page) => {
-  return (dispatch: ThunkDispatchType) => {
+  return (dispatch: ThunkDispatchType, getState: GetStateType) => {
     dispatch(setTicketLoading(true))
     request.get(`/api/ticket/${ticketId}`, {params: {page}})
       .then(response => {
         if(response.data !== undefined) {
-          dispatch(setTicketPageData({
-            data: response.data.ticket,
-            responses: response.data.responses.data,
-            totalPages: response.data.responses.last_page
-          }))
+          if(getState().ticket.data?.id !== ticketId) {
+            dispatch(setTicket(response.data.ticket))
+          }
+          dispatch(setTicketResponses(response.data.responses.data))
+          dispatch(setTicketTotalPages(response.data.responses.last_page))
         }
       })
       .catch(err => {})
@@ -56,10 +59,10 @@ export const changeStatus: ChangeStatusThunkType = (ticketId, status) => {
   }
 }
 
-export const addResponse: AddResponseThunkType = (ticketId, content, callback = (f: any) => f) => {
-  return (dispatch: ThunkDispatchType) => {
+export const addResponse: AddResponseThunkType = (content, callback = (f: any) => f) => {
+  return (dispatch: ThunkDispatchType, getState: GetStateType) => {
     dispatch(setAddResponseLoading(true))
-    request.post('/api/response', {ticket_id: ticketId, content})
+    request.post('/api/response', {ticket_id: getState().ticket.data?.id, content})
       .then(response => {
         if(response.data !== undefined) {
           dispatch(addResponseItem(response.data))
