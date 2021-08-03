@@ -12,7 +12,7 @@ services:
       - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./logs/nginx:/var/log/nginx
     healthcheck:
-      test: curl -f localhost/ & curl -f localhost/api/ || exit 1
+      test: curl -f ${HOST}/ & curl -f ${API_HOST} || exit 1
       timeout: 10s
       retries: 5
     depends_on:
@@ -26,12 +26,16 @@ services:
 
   frontend:
     image: reactjs/nginx
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - API_URL=http://${API_HOST}  
     container_name: frontend
     volumes:
       - ./logs/frontend:/var/log/nginx
     healthcheck:
-      test: curl -f localhost/ || exit 1
+      test: curl -f ${HOST}/ || exit 1
       timeout: 10s
       retries: 5
     depends_on:
@@ -44,6 +48,9 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+      args:
+        - API_URL=http://${API_HOST}
+        - HOST=${HOST}  
     image: laravel/php/apache
     container_name: api
     restart: unless-stopped
@@ -57,7 +64,7 @@ services:
       SERVICE_TAGS: dev
     working_dir: /var/www
     healthcheck:
-      test: curl -f localhost/
+      test: curl -f ${API_HOST}/ || exit 1
       timeout: 10s
       retries: 5
     depends_on:

@@ -4,6 +4,8 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . ./
+ARG API_URL
+RUN echo "REACT_APP_API_URL=${API_URL}" >> .env
 RUN npm run build
 
 # Stage 2 - the production environment

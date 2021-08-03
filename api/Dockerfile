@@ -48,5 +48,12 @@ COPY --chown=www:www . /var/www
 # Change current user to www
 USER www
 
+# Set .env
+ARG API_URL
+ARG HOST
+RUN echo "APP_URL=${API_URL}" >> .env
+RUN echo "SESSION_DOMAIN=${HOST}" >> .env
+RUN echo "SANCTUM_STATEFUL_DOMAINS=${HOST},localhost:3000" >> .env
+
 EXPOSE 80
 CMD ["apache2-foreground"]
