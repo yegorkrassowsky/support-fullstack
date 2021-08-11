@@ -24,6 +24,7 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
   const [files, setFiles] = useState<FilesInputType>(null)
   const filesErrors = files && errors ? Object.entries(errors).find(([k,v]) => k.startsWith('files'))?.[1] : null
 
+  const formRef = useRef<any>()
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
     editorRef.current = editor
@@ -35,7 +36,10 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
     }
   }, [loading])
 
-  const resetEditor = () => editorRef.current.setContent('')
+  const resetEditor = () => {
+    editorRef.current.setContent('')
+    formRef.current.reset()
+  }
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current) {
@@ -55,7 +59,7 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
 
   return (
     <div id="newReply" className="reply-container">
-    <form onSubmit={submitHandler}>
+    <form onSubmit={submitHandler} ref={formRef}>
       <fieldset disabled={loading}>
         <div className="form-header">
           <label className="form-label" onClick={()=>editorRef.current.focus()}>Add response</label>
