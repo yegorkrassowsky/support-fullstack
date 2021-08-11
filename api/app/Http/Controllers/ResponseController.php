@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\Response;
 use App\Models\User;
+use App\Models\File;
 
 class ResponseController extends Controller
 {
@@ -19,6 +20,7 @@ class ResponseController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required',
+            'files.*' => 'max:10240',
         ]);
         if( ! $request->has('ticket_id') ) {
             return response()->json(['error' => 'Invalid data'], 400);
@@ -49,6 +51,9 @@ class ResponseController extends Controller
             'content' => $validated['content'],
         ]);
         $response->save();
+        if($request->hasFile('files')) {
+            File::uploadZip($request->file('files'), null, $response->id);
+        }
 
         return response()->json(['ticket' => $ticket, 'response' => $response]);
 

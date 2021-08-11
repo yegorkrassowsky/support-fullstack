@@ -9,7 +9,7 @@ class Response extends Model
 {
     use HasFactory;
     protected $fillable = ['content'];
-    protected $appends = ['author', 'author_pos'];
+    protected $appends = ['author', 'author_pos', 'attachments'];
 
     public function getAuthorAttribute()
     {
@@ -33,4 +33,13 @@ class Response extends Model
         }
         return null;
     }
+    public function getAttachmentsAttribute()
+    {
+        $attachments = File::where('response_id', $this->id)->first();
+        if($attachments) {
+            return \URL::to('/api/files/' . $attachments->filename);
+        }
+        return null;
+    }
+
 }

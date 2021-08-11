@@ -2,7 +2,7 @@ import {
   AddTicketThunkType,
   ThunkDispatchType,
   LoadingActionCreatorType,
-  ErrorsActionCreatorType
+  ErrorsActionCreatorType,
 } from '../types'
 import {request} from '../services/store'
 import {addTicketListItem} from './ticketList'
@@ -11,7 +11,18 @@ import {NewTicketActionTypes} from '../constants'
 export const addTicket: AddTicketThunkType = (ticket, callback = (f: any) => f) => {
   return (dispatch: ThunkDispatchType) => {
     dispatch(setAddTicketLoading(true))
-    request.post('/api/ticket', ticket)
+    let formData = new FormData()
+    formData.append('subject', ticket.subject)
+    formData.append('content', ticket.content)
+    if(ticket.files){
+      Array.from(ticket.files).forEach(file => formData.append('files[]', file))
+    }
+    
+    request.post('/api/ticket', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    })
       .then(response => {
         if(response.data !== undefined) {
           dispatch(addTicketListItem(response.data))

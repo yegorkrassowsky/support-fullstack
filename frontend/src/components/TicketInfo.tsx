@@ -14,7 +14,7 @@ const TicketInfo: React.FC<TicketInfoProps> = ({ticket, loading, changeStatus}) 
   if(!ticket){
     return (<></>)
   }
-  const {id, author, subject, content, status} = ticket
+  const {id, author, subject, content, status, attachments} = ticket
   const changeStatusHandler = () => changeStatus(id, status ? 0 : 1)
   const openCloseBtnText = status === 0 ? 'Reopen' : 'Close'
   const changeStatusLoading = <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -34,6 +34,7 @@ const TicketInfo: React.FC<TicketInfoProps> = ({ticket, loading, changeStatus}) 
       </div>
       {content && <div className="ticket-body" dangerouslySetInnerHTML={{__html:content}}></div>}
       <div className="ticket-footer">
+        {attachments ? <a className="btn btn-outline-dark" href={attachments}><i className="fas fa-cloud-download-alt"></i> Attachments</a> : <span className="no-attachments">No attachments</span>}
         <a href="#newReply" className="btn btn-primary">Reply</a>
       </div>
     </div>

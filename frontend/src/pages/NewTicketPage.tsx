@@ -4,7 +4,7 @@ import {addTicket, setAddTicketErrors} from '../actions/newTicket'
 import InputErrors from '../components/InputErrors'
 import Loader from '../components/Loader'
 import Editor from '../components/Editor'
-import {ThunkDispatchType, AddTicketType, FormErrorsType, SetErrorsType} from '../types'
+import {ThunkDispatchType, AddTicketType, FormErrorsType, SetErrorsType, FilesInputType} from '../types'
 import {IAddTicket, IState, IFormState} from '../interfaces'
 import useFunctions from '../functions'
 
@@ -20,11 +20,14 @@ const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors
   useEffect(()=>{
     addTicketErrors(null)
   }, [addTicketErrors])
+  const [subject, setSubject] = useState<string>('')
+  const [editorReady, setEditorReady] = useState<boolean>(false)
+  const [files, setFiles] = useState<FilesInputType>(null)
   const validated = !!errors
   const subjectErrors = errors?.subject || null
   const contentErrors = errors?.content || null
-  const [subject, setSubject] = useState<string>('')
-  const [editorReady, setEditorReady] = useState<boolean>(false)
+  const filesErrors = files && errors ? Object.entries(errors).find(([k,v]) => k.startsWith('files'))?.[1] : null
+  
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
     editorRef.current = editor
@@ -32,6 +35,10 @@ const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors
   }
   const subjectHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSubject(e.target.value)
+  }
+
+  const filesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFiles(e.target.files)
   }
 
   useEffect(()=>{
@@ -42,9 +49,13 @@ const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors
 
   let containerClass = ['new-ticket-container']
   let subjectClass = ['form-control']
+  let filesClass = ['form-control']
 
   if(validated) {
     subjectClass.push(subjectErrors ? 'is-invalid' : 'is-valid')
+    if(files){
+      filesClass.push(filesErrors ? 'is-invalid' : 'is-valid')
+    }
   }
 
   if(editorReady) {
@@ -54,7 +65,7 @@ const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current !== undefined) {
-      addTicket({subject, content: editorRef.current.getContent()}, gotoTicket)
+      addTicket({subject, content: editorRef.current.getContent(), files}, gotoTicket)
     }
   }
 
@@ -76,6 +87,12 @@ const NewTicketPage: React.FC<NewTicketPageProps> = ({addTicket, addTicketErrors
               <label className="form-label" onClick={()=>editorRef.current.focus()}>Content</label>
               <Editor validated={validated} errors={!!contentErrors} setEditor={setEditor} />
               {contentErrors && <InputErrors errors={contentErrors} />}
+            </div>
+            <div className="mb-3">
+              <label htmlFor="ticketInputFiles" className="form-label">Attachments</label>
+              <input type="file" onChange={filesHandler} multiple className={filesClass.join(' ')} />
+              <div id="filesHelp" className="form-text">Maximum file size: 10 MB.</div>
+              {filesErrors && <InputErrors errors={filesErrors} />}
             </div>
             {loading ? (
             <button className="btn btn-primary" type="button" disabled>

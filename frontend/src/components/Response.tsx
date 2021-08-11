@@ -10,6 +10,7 @@ const Response: React.FC<IResponse> = ({
   created_at,
   showDate,
   loading,
+  attachments,
 }) => {
   const date = showDate ? new Date(created_at).toLocaleDateString() : null
   const time = new Date(created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -29,6 +30,9 @@ const Response: React.FC<IResponse> = ({
             <div className="response-time">{time}</div>
           </div>
           <div className="response-body" dangerouslySetInnerHTML={{__html:content}}></div>
+          <div className="response-footer">
+            {attachments && <a className="btn btn-outline-dark" href={attachments}><i className="fas fa-cloud-download-alt"></i> Attachments</a>}
+          </div>
         </div>
       </div>
     </div>

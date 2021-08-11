@@ -9,7 +9,7 @@ class Ticket extends Model
 {
     use HasFactory;
     protected $fillable = ['subject', 'content'];
-    protected $appends = ['author', 'agent'];
+    protected $appends = ['author', 'agent', 'attachments'];
 
     public function getAuthorAttribute()
     {
@@ -29,4 +29,12 @@ class Ticket extends Model
         return null;
     }
 
+    public function getAttachmentsAttribute()
+    {
+        $attachments = File::where('ticket_id', $this->id)->first();
+        if($attachments) {
+            return \URL::to('/api/files/' . $attachments->filename);
+        }
+        return null;
+    }
 }

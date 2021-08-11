@@ -1,9 +1,9 @@
-import React, {useRef, useEffect} from 'react'
+import React, {useRef, useEffect, useState} from 'react'
 import Editor from './Editor'
 import InputErrors from '../components/InputErrors'
 import {addResponse, setAddResponseErrors} from '../actions/ticket'
-import { IFormState, IState } from '../interfaces'
-import {AddResponseType, ThunkDispatchType, SetErrorsType, FormErrorsType} from '../types'
+import { IAddResponse, IFormState, IState } from '../interfaces'
+import {AddResponseType, ThunkDispatchType, SetErrorsType, FormErrorsType, FilesInputType} from '../types'
 import { connect } from 'react-redux'
 
 type ReplyProps = {
@@ -19,7 +19,10 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
   }, [addResponseErrors])
 
   const {errors, loading} = formState
+  const validated = !!errors
   const contentErrors = errors?.content || null
+  const [files, setFiles] = useState<FilesInputType>(null)
+  const filesErrors = files && errors ? Object.entries(errors).find(([k,v]) => k.startsWith('files'))?.[1] : null
 
   const editorRef = useRef<any>()
   const setEditor = (editor: any) => {
@@ -36,9 +39,19 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
   const submitHandler = (e: React.FormEvent) => {
     e.preventDefault()
     if (editorRef.current) {
-      addResponse(editorRef.current.getContent(), resetEditor)
+      addResponse({content: editorRef.current.getContent(), files}, resetEditor)
     }
   }
+
+  const filesHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFiles(e.target.files)
+  }
+
+  let filesClass = ['form-control']
+  if(validated && files) {
+    filesClass.push(filesErrors ? 'is-invalid' : 'is-valid')
+  }
+
 
   return (
     <div id="newReply" className="reply-container">
@@ -48,8 +61,14 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
           <label className="form-label" onClick={()=>editorRef.current.focus()}>Add response</label>
         </div>
         <div className="form-body">
-          <Editor validated={!!errors} errors={!!contentErrors} setEditor={setEditor} />
+          <Editor validated={validated} errors={!!contentErrors} setEditor={setEditor} />
           {contentErrors && <InputErrors errors={contentErrors} />}
+        </div>
+        <div className="mb-3">
+          <label htmlFor="responseInputFiles" className="form-label">Attachments</label>
+          <input type="file" onChange={filesHandler} multiple className={filesClass.join(' ')} />
+          <div id="filesHelp" className="form-text">Maximum file size: 10 MB.</div>
+          {filesErrors && <InputErrors errors={filesErrors} />}
         </div>
         <div className="form-footer">
           {loading ? (
@@ -67,7 +86,7 @@ const Reply: React.FC<ReplyProps> = ({formState, addResponse, addResponseErrors,
 }
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
-  addResponse: (content: string, callback: Function) => dispatch(addResponse(content, callback)),
+  addResponse: (response: IAddResponse, callback: Function) => dispatch(addResponse(response, callback)),
   addResponseErrors: (errors: FormErrorsType) => dispatch(setAddResponseErrors(errors)),
 })
 

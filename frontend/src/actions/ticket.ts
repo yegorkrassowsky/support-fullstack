@@ -59,10 +59,22 @@ export const changeStatus: ChangeStatusThunkType = (ticketId, status) => {
   }
 }
 
-export const addResponse: AddResponseThunkType = (content, callback = (f: any) => f) => {
+export const addResponse: AddResponseThunkType = (response, callback = (f: any) => f) => {
   return (dispatch: ThunkDispatchType, getState: GetStateType) => {
     dispatch(setAddResponseLoading(true))
-    request.post('/api/response', {ticket_id: getState().ticket.data?.id, content})
+    let formData = new FormData()
+    const ticketId = `${getState().ticket.data?.id}`
+    formData.append('content', response.content)
+    formData.append('ticket_id', ticketId)
+    if(response.files){
+      Array.from(response.files).forEach(file => formData.append('files[]', file))
+    }
+
+    request.post('/api/response', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }
+    })
       .then(response => {
         if(response.data !== undefined) {
           dispatch(addResponseItem(response.data))

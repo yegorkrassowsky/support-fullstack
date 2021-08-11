@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\Response;
 use App\Models\User;
+use App\Models\File;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
@@ -47,9 +48,11 @@ class TicketController extends Controller
         $user = $request->user();
 
         if ($user->hasRole('client')){
+
             $validated = $request->validate([
                 'subject' => 'required',
                 'content' => 'required',
+                'files.*' => 'max:10240',
             ]);
             $ticket = new Ticket;
             $ticket->author_id = $user->id;
@@ -59,6 +62,9 @@ class TicketController extends Controller
                 'content' => $validated['content'],
             ]);
             $ticket->save();
+            if($request->hasFile('files')) {
+                File::uploadZip($request->file('files'), $ticket->id);
+            }
             return response()->json($ticket, 201);
         }
         return response()->json(['error' => 'Forbidden'], 403);

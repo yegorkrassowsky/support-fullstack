@@ -19,12 +19,14 @@ import {
   ILimit,
   IStatusOrNull,
   IResponse,
+  IAddResponse,
 } from './interfaces'
 import {AuthActionTypes, TicketListActionTypes, NewTicketActionTypes, TicketActionTypes, RootActionTypes} from './constants'
 import {ThunkDispatch} from 'redux-thunk'
 
 export type FormErrorsType = IErrors | null
 export type TicketListStatusType = number | null
+export type FilesInputType = FileList | null
 
 // Actions
 
@@ -90,9 +92,9 @@ export type SetTicketListLimitThunkType = (limit: number) => DispatchCallbackTyp
 export type GetTicketsThunkType = () => DispatchCallbackType
 export type TakeTicketThunkType = (id: number) => DispatchCallbackType
 export type AddTicketThunkType = (ticket: IAddTicket, callback: Function) => DispatchCallbackType
+export type AddResponseThunkType = (response: IAddResponse, callback: Function) => DispatchCallbackType
 export type SetTicketPageThunkType = (ticketId: number, page: number) => DispatchCallbackType
 export type ChangeStatusThunkType = (ticketId: number, status: number) => DispatchCallbackType
-export type AddResponseThunkType = (content: string, callback: Function) => DispatchCallbackType
 
 // Functions Dispatched To Props
 
@@ -107,4 +109,4 @@ export type TakeTicketType = (id: number) => void
 export type AddTicketType = (ticket: IAddTicket, callback: Function) => void
 export type SetTicketPageType = (ticketId: number, page: number) => void
 export type ChangeStatusType = (ticketId: number, status: number) => void
-export type AddResponseType = (content: string, callback: Function) => void
+export type AddResponseType = (response: IAddResponse, callback: Function) => void

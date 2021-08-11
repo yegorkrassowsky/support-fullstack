@@ -1,4 +1,4 @@
-import { FormErrorsType } from "./types"
+import { FormErrorsType, FilesInputType } from "./types"
 
 export interface IID {
   id: number
@@ -20,6 +20,10 @@ export interface IContent {
   content: string
 }
 
+export interface IFiles {
+  files: FilesInputType
+}
+
 export interface IAuthor {
   author: string
 }
@@ -36,20 +40,25 @@ export interface IStatus {
   status: number
 }
 
-export interface IAddTicket extends ISubject, IContent {}
+export interface IAddTicket extends ISubject, IContent, IFiles {}
+export interface IAddResponse extends IContent, IFiles {}
 
 export interface IAgent {
   agent: string
 }
 
-export interface ITicket extends IID, ISubject, IContent, IAuthor, ICreatedAt, IUpdatedAt, IStatus, IAgent {
+export interface IAttachments {
+  attachments: string
 }
+
+export interface ITicket extends IID, ISubject, IContent, IAuthor, ICreatedAt, IUpdatedAt, IStatus, IAgent, IAttachments {}
 
 export interface ITicketItemState extends ITicket, Partial<ILoading> {}
 
 export interface IResponse extends IID, IContent, IAuthor, ICreatedAt, IUpdatedAt, Partial<ILoading> {
   author_pos: string
   showDate?: boolean
+  attachments: string | null
 }
 
 export interface IResponses {
