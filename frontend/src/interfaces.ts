@@ -81,7 +81,7 @@ export interface ILoggedIn {
   loggedIn: boolean
 }
 export interface IAuthState extends ILoggedIn, IUserName, IUserRoles {
-  login: IFormState
+  login: ILoading
 }
 
 export interface ITicketList {

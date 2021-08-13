@@ -36,7 +36,6 @@ export type RootAction =
 export type AuthAction =
 | {type: AuthActionTypes.LOGIN} & IUserName & IUserRoles
 | {type: AuthActionTypes.SET_LOGIN_LOADING} & ILoading
-| {type: AuthActionTypes.SET_LOGIN_ERRORS} & IFormErrors
 
 export type TicketListAction =
 | {type: TicketListActionTypes.SET} & ITicketList & ITotalPages
@@ -100,7 +99,7 @@ export type ChangeStatusThunkType = (ticketId: number, status: number) => Dispat
 
 export type SetErrorsType = (errors: FormErrorsType) => void
 
-export type OnLoginType = (credentials: ILogin) => void
+export type OnLoginType = (credentials: ILogin) => void | IErrors
 export type SetTicketListPageType = (page: number) => void
 export type SetTicketListLimitType = (limit: number) => void
 export type SetTicketListStatusType = (status: number | null) => void

@@ -1,11 +1,10 @@
-import { errorsReducer, loadingReducer } from '.'
+import {loadingReducer} from '.'
 import {AuthActionTypes} from '../constants'
 import {IAuthState} from '../interfaces'
 import {AuthAction} from '../types'
 
 const initialLoginState = {
   loading: false,
-  errors: null
 }
 
 export const authDefaults = {
@@ -34,8 +33,6 @@ const authReducer = (state: IAuthState = initialAuthState, action: AuthAction): 
       }}
     case AuthActionTypes.SET_LOGIN_LOADING:
       return {...state, login: loadingReducer(state.login, action.loading)}
-    case AuthActionTypes.SET_LOGIN_ERRORS:
-      return {...state, login: errorsReducer(state.login, action.errors)}
     default:
       return state
   }

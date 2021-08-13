@@ -23,7 +23,6 @@ export enum RootActionTypes {
 export enum AuthActionTypes {
   LOGIN = 'LOGIN',
   SET_LOGIN_LOADING = 'AUTH_SET_LOGIN_LOADING',
-  SET_LOGIN_ERRORS = 'AUTH_SET_LOGIN_ERRORS',
 }
 
 export enum TicketListActionTypes {

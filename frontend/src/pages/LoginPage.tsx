@@ -1,44 +1,31 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {connect} from 'react-redux'
 import {login} from '../actions/auth'
-import InputErrors from '../components/InputErrors'
+import { Form, Field } from "react-final-form"
 import {GuestClientCredentials, GuestAgentCredentials} from '../constants'
 import {IState, ILogin, ILoading, IFormErrors} from '../interfaces'
 import {OnLoginType, ThunkDispatchType} from '../types'
+import { createFinalFormValidation } from "@lemoncode/fonk-final-form"
+import { Validators } from '@lemoncode/fonk'
 
 type LoginPageProps = {
   onLogin: OnLoginType
 } & ILoading & IFormErrors
 
-const LoginPage: React.FC<LoginPageProps> = ({loading, errors, onLogin}) => {
-  const [email, setEmail] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
-  const emailErrors = errors?.email || null
-  const passwordErrors = errors?.password || null
+const formValidation = createFinalFormValidation({
+  field: {
+    email: [Validators.required.validator, Validators.email.validator],
+    password: [Validators.required.validator],
+  }
+})
 
-  const submitHandler = (e: React.FormEvent) => {
-    e.preventDefault()
-    onLogin({email, password})
-  }
-  const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-  }
-  const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
-  }
+const LoginPage: React.FC<LoginPageProps> = ({loading, onLogin}) => {
+  const submitHandler = (values: ILogin) => onLogin(values)
   const guestClientHandler = (e: React.MouseEvent) => {
     onLogin({email: GuestClientCredentials.EMAIL, password: GuestClientCredentials.PASS})
   }
   const guestAgentHandler = (e: React.MouseEvent) => {
     onLogin({email: GuestAgentCredentials.EMAIL, password: GuestAgentCredentials.PASS})
-  }
-
-  let emailClass = ['form-control']
-  let passwordClass = ['form-control']
-
-  if(errors) {
-    emailClass.push(emailErrors ? 'is-invalid' : 'is-valid')
-    passwordClass.push(passwordErrors ? 'is-invalid' : 'is-valid')
   }
 
   return (
@@ -47,29 +34,65 @@ const LoginPage: React.FC<LoginPageProps> = ({loading, errors, onLogin}) => {
         <h1>Login</h1>
       </div>
       <div className="login-container">
-        <form onSubmit={submitHandler}>
-          <fieldset disabled={loading}>
-            <div className="mb-3">
-              <label htmlFor="loginInputEmail" className="form-label">Email address</label>
-              <input value={email} onChange={emailHandler} type="email" className={emailClass.join(' ')} id="loginInputEmail" aria-describedby="emailHelp" />
-              {emailErrors && <InputErrors errors={emailErrors} />}
-              <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
-            </div>
-            <div className="mb-3">
-              <label htmlFor="loginInputPassword" className="form-label">Password</label>
-              <input value={password} onChange={passwordHandler} type="password" className={passwordClass.join(' ')} id="loginInputPassword" />
-              {passwordErrors && <InputErrors errors={passwordErrors} />}
-            </div>
-            <div className="d-grid gap-3">
-              <button className="btn btn-primary" type="submit" disabled={loading}>
-                {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Login'}
-              </button>
-              <div className="guest-login-text">or login as</div>
-              <button onClick={guestClientHandler} className="btn btn-warning" type="button" disabled={loading}>Guest client</button>
-              <button onClick={guestAgentHandler} className="btn btn-success" type="button" disabled={loading}>Guest agent</button>
-            </div>
-          </fieldset>
-        </form>
+        <Form
+          onSubmit={submitHandler}
+          initialValues={{
+            email: '',
+            password: '',
+          }}
+          validate={(values) => formValidation.validateForm(values)}
+          render={({ handleSubmit, submitError }) => {
+            return (
+              <form onSubmit={handleSubmit}>
+                <fieldset disabled={loading}>
+                  <Field name="email">
+                    {({input, meta}) => {
+                      const touched = meta.touched || meta.submitFailed
+                      const error = meta.error || meta.submitError
+                      let inputClass = ['form-control']
+                      if(touched) {
+                        inputClass.push(error ? 'is-invalid' : 'is-valid')
+                      }
+                      return (
+                        <div className="mb-3">
+                          <label htmlFor="loginInputEmail" className="form-label">Email address</label>
+                          <input id="loginInputEmail" className={inputClass.join(' ')} aria-describedby="emailHelp" {...input} />
+                          {touched && error && <div className="invalid-feedback">{error}</div>}
+                          <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
+                        </div>
+                    )}}
+                  </Field>
+                  <Field name="password" type="password">
+                    {({input, meta}) => {
+                      const touched = meta.touched || meta.submitFailed
+                      const error = meta.error || meta.submitError
+                      let inputClass = ['form-control']
+                      if(touched) {
+                        inputClass.push(error ? 'is-invalid' : 'is-valid')
+                      }
+                      return (
+                        <div className="mb-3">
+                          <label htmlFor="loginInputPassword" className="form-label">Password</label>
+                          <input id="loginInputPassword" className={inputClass.join(' ')} {...input} />
+                          {touched && error && <div className="invalid-feedback">{error}</div>}
+                        </div>
+                      )
+                    }}
+                  </Field>
+                  {submitError && <div className="invalid-feedback d-block mb-3">{submitError}</div>}
+                  <div className="d-grid gap-3">
+                    <button className="btn btn-primary" type="submit" disabled={loading}>
+                      {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Login'}
+                    </button>
+                    <div className="guest-login-text">or login as</div>
+                    <button onClick={guestClientHandler} className="btn btn-warning" type="button" disabled={loading}>Guest client</button>
+                    <button onClick={guestAgentHandler} className="btn btn-success" type="button" disabled={loading}>Guest agent</button>
+                  </div>
+                </fieldset>
+              </form>
+            )
+          }}
+        />
       </div>
     </div>
   )
@@ -77,11 +100,10 @@ const LoginPage: React.FC<LoginPageProps> = ({loading, errors, onLogin}) => {
 
 const mapDispatchToProps = (dispatch: ThunkDispatchType) => ({
   onLogin: (credentials: ILogin) => {
-    dispatch(login(credentials))
+    return dispatch(login(credentials))
   }
 })
 
 export default connect((state: IState) => ({
   loading: state.auth.login.loading,
-  errors: state.auth.login.errors
 }), mapDispatchToProps)(LoginPage)
